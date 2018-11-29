@@ -19,6 +19,14 @@ If you review the go-trader code, you will quickly see that I use dot imports fo
 is a "business/user" app and not systems code, this provides 2 major benefits: less verbose code, and I can easily change the
 implementation of Fixed without changing lots of LOC - just the import statement, and some of the wrapper methods in common.
 
+The fixed.Fixed API uses NaN for reporting errors in the common case, since often code is chained like:
+```
+   result := someFixed.Mul(NewS("123.50"))
+```
+and this would be a huge pain with error handling. Since all operations involving a NaN result in a NaN,
+ any errors quickly surface anyway.
+
+
 **Performance**
 
 <pre>
