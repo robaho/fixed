@@ -39,6 +39,26 @@ func TestBasic(t *testing.T) {
 	}
 }
 
+func TestSign(t *testing.T) {
+	f0 := NewS("0")
+	if f0.Sign() != 0 {
+		t.Error("should be equal", f0.Sign(), 0)
+	}
+	f0 = NewS("NaN")
+	if f0.Sign() != 0 {
+		t.Error("should be equal", f0.Sign(), 0)
+	}
+	f0 = NewS("-100")
+	if f0.Sign() != -1 {
+		t.Error("should be equal", f0.Sign(), -1)
+	}
+	f0 = NewS("100")
+	if f0.Sign() != 1 {
+		t.Error("should be equal", f0.Sign(), 1)
+	}
+
+}
+
 func TestMaxValue(t *testing.T) {
 	f0 := NewS("12345678901")
 	if f0.String() != "12345678901" {
@@ -262,6 +282,10 @@ func TestNaN(t *testing.T) {
 	}
 	if f0.String() != "NaN" {
 		t.Error("should be equal", f0.String(), "NaN")
+	}
+	f0 = NewS("NaN")
+	if !f0.IsNaN() {
+		t.Error("f0 should be NaN")
 	}
 }
 
