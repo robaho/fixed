@@ -175,18 +175,19 @@ func (f Fixed) Mul(f0 Fixed) Fixed {
 		return NaN
 	}
 
-	fp := f.fp
-	fp0 := f0.fp
+	fp_a := f.fp / pow7
+	fp_b := f.fp % pow7
+
+	fp0_a := f0.fp / pow7
+	fp0_b := f0.fp % pow7
 
 	var result int64
 
-	fp0a := fp0 / pow7
-	fp0b := fp0 % pow7
-
-	result = fp * (fp0a)
-	if fp0b != 0 {
-		result = result + (fp/pow7)*(fp0b)
-		result = result + (fp%pow7)*(fp0b)
+	if fp0_a != 0 {
+		result = fp_a*fp0_a*pow7 + fp_b*fp0_a
+	}
+	if fp0_b != 0 {
+		result = result + (fp_a * fp0_b) + ((fp_b)*fp0_b)/pow7
 	}
 
 	return Fixed{fp: result}
