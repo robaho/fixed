@@ -60,7 +60,7 @@ func NewSErr(s string) (Fixed, error) {
 		}
 		fs := s[period+1:]
 		fs = fs + zeros[:nPlaces-len(fs)]
-		f, _ = strconv.ParseInt(fs[0:7], 10, 64)
+		f, _ = strconv.ParseInt(fs[0:nPlaces], 10, 64)
 	}
 	if i > 99999999999 {
 		return NaN, errTooLarge
