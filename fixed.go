@@ -5,6 +5,7 @@ package fixed
 import (
 	"encoding/binary"
 	"errors"
+	"fmt"
 	"io"
 	"math"
 	"strconv"
@@ -343,4 +344,24 @@ func ReadFrom(r io.ByteReader) (Fixed, error) {
 		return NaN, err
 	}
 	return Fixed{fp: fp}, nil
+}
+
+// UnmarshalJSON implements the json.Unmarshaler interface.
+func (f *Fixed) UnmarshalJSON(bytes []byte) error {
+	s := string(bytes)
+	if s == "null" {
+		return nil
+	}
+
+	fixed, err := NewSErr(s)
+	*f = fixed
+	if err != nil {
+		return fmt.Errorf("Error decoding string '%s': %s", s, err)
+	}
+	return nil
+}
+
+// MarshalJSON implements the json.Marshaler interface.
+func (f Fixed) MarshalJSON() ([]byte, error) {
+	return []byte(f.String()), nil
 }

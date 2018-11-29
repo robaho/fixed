@@ -2,6 +2,7 @@ package fixed_test
 
 import (
 	"bytes"
+	"encoding/json"
 	. "github.com/robaho/fixed"
 	"math"
 	"testing"
@@ -376,5 +377,37 @@ func TestEncodeDecode(t *testing.T) {
 
 	if !f.Equal(f1) {
 		t.Error("don't match", f, f0)
+	}
+}
+
+type JStruct struct {
+	F Fixed `json:"f"`
+}
+
+func TestJSON(t *testing.T) {
+	j := JStruct{}
+
+	f := NewS("1234567.1234567")
+	j.F = f
+
+	var buf bytes.Buffer
+	enc := json.NewEncoder(&buf)
+
+	err := enc.Encode(&j)
+	if err != nil {
+		t.Error(err)
+	}
+
+	j.F = ZERO
+
+	dec := json.NewDecoder(&buf)
+
+	err = dec.Decode(&j)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if !j.F.Equal(f) {
+		t.Error("don't match", j.F, f)
 	}
 }
