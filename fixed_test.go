@@ -204,12 +204,20 @@ func TestMulDiv(t *testing.T) {
 		t.Error("should be equal", f2.String(), "123456")
 	}
 
+	f0 = NewS("10000.1")
+	f1 = NewS("10000")
+
+	f2 = f0.Mul(f1)
+	if f2.String() != "100001000" {
+		t.Error("should be equal", f2.String(), "100001000")
+	}
+
 	f0 = NewS("2")
 	f1 = NewS("3")
 
 	f2 = f0.Div(f1)
-	if f2.String() != "0.6666666" {
-		t.Error("should be equal", f2.String(), "0.6666666")
+	if f2.String() != "0.6666667" {
+		t.Error("should be equal", f2.String(), "0.6666667")
 	}
 
 	f0 = NewS("1000")
@@ -268,16 +276,16 @@ func TestOverflow(t *testing.T) {
 		t.Error("should be equal", f0.String(), "1.1234567")
 	}
 	f0 = NewF(1.123456789123)
-	if f0.String() != "1.1234567" {
-		t.Error("should be equal", f0.String(), "1.1234567")
+	if f0.String() != "1.1234568" {
+		t.Error("should be equal", f0.String(), "1.1234568")
 	}
 	f0 = NewF(1.0 / 3.0)
 	if f0.String() != "0.3333333" {
 		t.Error("should be equal", f0.String(), "0.3333333")
 	}
 	f0 = NewF(2.0 / 3.0)
-	if f0.String() != "0.6666666" {
-		t.Error("should be equal", f0.String(), "0.6666666")
+	if f0.String() != "0.6666667" {
+		t.Error("should be equal", f0.String(), "0.6666667")
 	}
 
 }
