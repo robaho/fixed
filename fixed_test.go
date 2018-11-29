@@ -41,6 +41,30 @@ func TestBasic(t *testing.T) {
 	}
 }
 
+func TestNewI(t *testing.T) {
+	f := NewI(123, 1)
+	if f.String() != "12.3" {
+		t.Error("should be equal", f, "12.3")
+	}
+	f = NewI(-123, 1)
+	if f.String() != "-12.3" {
+		t.Error("should be equal", f, "-12.3")
+	}
+	f = NewI(123, 0)
+	if f.String() != "123" {
+		t.Error("should be equal", f, "123")
+	}
+	f = NewI(123456789012, 9)
+	if f.String() != "123.456789" {
+		t.Error("should be equal", f, "123.456789")
+	}
+	f = NewI(123456789012, 9)
+	if f.StringN(7) != "123.4567890" {
+		t.Error("should be equal", f.StringN(7), "123.4567890")
+	}
+
+}
+
 func TestSign(t *testing.T) {
 	f0 := NewS("0")
 	if f0.Sign() != 0 {

@@ -97,6 +97,19 @@ func NewF(f float64) Fixed {
 	return Fixed{fp: int64(f*float64(pow7) + round)}
 }
 
+// NewI creates a Fixed for an integer, moving the decimal point n places to the left
+// For example, NewI(123,1) becomes 12.3. If n > 7, the value is truncated
+func NewI(i int64, n uint) Fixed {
+	if n > nPlaces {
+		i = i / int64(math.Pow10(int(n-nPlaces)))
+		n = nPlaces
+	}
+
+	i = i * int64(math.Pow10(int(nPlaces-n)))
+
+	return Fixed{fp: i}
+}
+
 func (f Fixed) IsNaN() bool {
 	return f.fp == nan
 }
