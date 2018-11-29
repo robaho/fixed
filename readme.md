@@ -31,3 +31,5 @@ BenchmarkStringDecimal-8    	 5000000	       326 ns/op	     144 B/op	       5 al
 BenchmarkStringBigInt-8     	10000000	       209 ns/op	      80 B/op	       3 allocs/op
 BenchmarkStringBigFloat-8   	 3000000	       571 ns/op	     272 B/op	       8 allocs/op
 ```
+
+The "decimal" above is the common [shopspring decimal](https://github.com/shopspring/decimal) library
