@@ -328,6 +328,7 @@ func (f Fixed) MarshalBinary() (data []byte, err error) {
 	return buffer[:n], nil
 }
 
+// WriteTo write the Fixed to an io.Writer, returning the number of bytes written
 func (f Fixed) WriteTo(w io.Writer) (int, error) {
 	var buffer [12]byte
 	n := binary.PutVarint(buffer[:], f.fp)
@@ -335,6 +336,7 @@ func (f Fixed) WriteTo(w io.Writer) (int, error) {
 	return w.Write(buffer[:n])
 }
 
+// ReadFrom reads a Fixed from an io.Reader
 func ReadFrom(r io.ByteReader) (Fixed, error) {
 	fp, err := binary.ReadVarint(r)
 	if err != nil {
