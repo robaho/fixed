@@ -32,7 +32,7 @@ func NewS(s string) Fixed {
 	return f
 }
 
-// NewS creates a new Fixed from a string, returning NaN, and error if the string could not be parsed
+// NewSErr creates a new Fixed from a string, returning NaN, and error if the string could not be parsed
 func NewSErr(s string) (Fixed, error) {
 	if strings.ContainsAny(s, "eE") {
 		f, err := strconv.ParseFloat(s, 64)
@@ -77,6 +77,7 @@ func max(a, b int) int {
 	return b
 }
 
+// NewF creates a Fixed from an float64, rounding at the 8th decimal place
 func NewF(f float64) Fixed {
 	if math.IsNaN(f) {
 		return Fixed{fp: nan}
@@ -153,8 +154,14 @@ func (f Fixed) Round(n int) Fixed {
 	if f.IsNaN() {
 		return NaN
 	}
+
+	round := .5
+	if f.fp < 0 {
+		round = -0.5
+	}
+
 	f0 := f.Frac()
-	f0 = f0*math.Pow10(n) + .5
+	f0 = f0*math.Pow10(n) + round
 	f0 = float64(int(f0)) / math.Pow10(n)
 
 	return NewF(float64(f.Int()) + f0)

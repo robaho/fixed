@@ -336,4 +336,16 @@ func TestRound(t *testing.T) {
 	if f1.String() != "1.1235" {
 		t.Error("should be equal", f1, "1.1235")
 	}
+
+	f0 = NewS("-1.12345")
+	f1 = f0.Round(3)
+
+	if f1.String() != "-1.123" {
+		t.Error("should be equal", f1, "-1.123")
+	}
+	f1 = f0.Round(4)
+
+	if f1.String() != "-1.1235" {
+		t.Error("should be equal", f1, "-1.1235")
+	}
 }
