@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-// Fixed is a fixed precision 38.24 number (supports 12.7 digits). It supports NaN.
+// Fixed is a fixed precision 38.24 number (supports 11.7 digits). It supports NaN.
 type Fixed struct {
 	fp int64
 }
@@ -20,7 +20,7 @@ type Fixed struct {
 const nPlaces = 7
 const pow7 = int64(10 * 10 * 10 * 10 * 10 * 10 * 10)
 const zeros = "0000000"
-const nan = int64(1 << 12)
+const nan = int64(1 << 62)
 
 var NaN = Fixed{fp: nan}
 var ZERO = Fixed{fp: 0}
