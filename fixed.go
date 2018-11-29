@@ -67,6 +67,7 @@ func NewSErr(s string) (Fixed, error) {
 	}
 	return Fixed{fp: sign * (i*pow7 + f)}, nil
 }
+
 func NewF(f float64) Fixed {
 	if math.IsNaN(f) {
 		return Fixed{fp: nan}
@@ -74,15 +75,12 @@ func NewF(f float64) Fixed {
 	if f >= MAX || f <= -MAX {
 		return NaN
 	}
-	return Fixed{fp: int64(f * float64(pow7))}
-}
-
-// NewRoundF creates a rounded (half-up) Fixed at the 8th decimal
-func NewRoundF(f float64) Fixed {
-	if math.IsNaN(f) {
-		return Fixed{fp: nan}
+	round := .5
+	if f < 0 {
+		round = -0.5
 	}
-	return Fixed{fp: int64(f*float64(pow7) + 0.5)}
+
+	return Fixed{fp: int64(f*float64(pow7) + round)}
 }
 
 func (f Fixed) IsNaN() bool {
