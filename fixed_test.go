@@ -34,38 +34,38 @@ func TestBasic(t *testing.T) {
 	}
 
 	f0 = NewF(.999)
-	if f0.String()!="0.999" {
-		t.Error("should be equal", f0,"0.999")
+	if f0.String() != "0.999" {
+		t.Error("should be equal", f0, "0.999")
 	}
 }
 
 func TestMaxValue(t *testing.T) {
 	f0 := NewS("12345678901")
-	if f0.String()!="12345678901" {
+	if f0.String() != "12345678901" {
 		t.Error("should be equal", f0, "12345678901")
 	}
 	f0 = NewS("123456789012")
-	if f0.String()!="NaN" {
+	if f0.String() != "NaN" {
 		t.Error("should be equal", f0, "NaN")
 	}
 	f0 = NewS("-12345678901")
-	if f0.String()!="-12345678901" {
+	if f0.String() != "-12345678901" {
 		t.Error("should be equal", f0, "-12345678901")
 	}
 	f0 = NewS("-123456789012")
-	if f0.String()!="NaN" {
+	if f0.String() != "NaN" {
 		t.Error("should be equal", f0, "NaN")
 	}
 	f0 = NewS("99999999999")
-	if f0.String()!="99999999999" {
+	if f0.String() != "99999999999" {
 		t.Error("should be equal", f0, "99999999999")
 	}
 	f0 = NewS("9.9999999")
-	if f0.String()!="9.9999999" {
+	if f0.String() != "9.9999999" {
 		t.Error("should be equal", f0, "9.9999999")
 	}
 	f0 = NewS("99999999999.9999999")
-	if f0.String()!="99999999999.9999999" {
+	if f0.String() != "99999999999.9999999" {
 		t.Error("should be equal", f0, "99999999999.9999999")
 	}
 
@@ -136,7 +136,7 @@ func TestAddSub(t *testing.T) {
 	}
 
 	f0 = NewS("0")
-	for i:=0;i<10;i++ {
+	for i := 0; i < 10; i++ {
 		f0 = f0.Add(NewS("0.1"))
 	}
 	if f0.String() != "1" {
@@ -162,6 +162,22 @@ func TestMulDiv(t *testing.T) {
 		t.Error("should be equal", f2.String(), "0.6666666")
 	}
 
+	f0 = NewS("1000")
+	f1 = NewS("10")
+
+	f2 = f0.Div(f1)
+	if f2.String() != "100" {
+		t.Error("should be equal", f2.String(), "100")
+	}
+
+	f0 = NewS("1000")
+	f1 = NewS("0.1")
+
+	f2 = f0.Div(f1)
+	if f2.String() != "10000" {
+		t.Error("should be equal", f2.String(), "10000")
+	}
+
 	f0 = NewS("1")
 	f1 = NewS("0.1")
 
@@ -169,7 +185,6 @@ func TestMulDiv(t *testing.T) {
 	if f2.String() != "0.1" {
 		t.Error("should be equal", f2.String(), "0.1")
 	}
-
 
 }
 
@@ -271,50 +286,49 @@ func TestString(t *testing.T) {
 	}
 }
 
-
 func TestStringN(t *testing.T) {
 	f0 := NewS("1.1")
 	s := f0.StringN(2)
 
-	if s!="1.10" {
+	if s != "1.10" {
 		t.Error("should be equal", s, "1.10")
 	}
 	f0 = NewS("1.123")
 	s = f0.StringN(2)
 
-	if s!="1.12" {
+	if s != "1.12" {
 		t.Error("should be equal", s, "1.12")
 	}
 	f0 = NewS("1.123")
 	s = f0.StringN(2)
 
-	if s!="1.12" {
+	if s != "1.12" {
 		t.Error("should be equal", s, "1.12")
 	}
 	f0 = NewS("1.123")
 	s = f0.StringN(0)
 
-	if s!="1" {
+	if s != "1" {
 		t.Error("should be equal", s, "1")
 	}
 }
 
-func TestRound(t *testing.T){
+func TestRound(t *testing.T) {
 	f0 := NewS("1.12345")
 	f1 := f0.Round(2)
 
-	if f1.String()!="1.12" {
+	if f1.String() != "1.12" {
 		t.Error("should be equal", f1, "1.12")
 	}
 
 	f1 = f0.Round(5)
 
-	if f1.String()!="1.12345" {
+	if f1.String() != "1.12345" {
 		t.Error("should be equal", f1, "1.12345")
 	}
 	f1 = f0.Round(4)
 
-	if f1.String()!="1.1235" {
+	if f1.String() != "1.1235" {
 		t.Error("should be equal", f1, "1.1235")
 	}
 }
