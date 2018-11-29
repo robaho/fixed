@@ -1,6 +1,7 @@
 package fixed_test
 
 import (
+	"bytes"
 	. "github.com/robaho/fixed"
 	"math"
 	"testing"
@@ -347,5 +348,33 @@ func TestRound(t *testing.T) {
 
 	if f1.String() != "-1.1235" {
 		t.Error("should be equal", f1, "-1.1235")
+	}
+}
+
+func TestEncodeDecode(t *testing.T) {
+	b := &bytes.Buffer{}
+
+	f := NewS("12345.12345")
+
+	f.WriteTo(b)
+
+	f0, err := ReadFrom(b)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if !f.Equal(f0) {
+		t.Error("don't match", f, f0)
+	}
+
+	data, err := f.MarshalBinary()
+	if err != nil {
+		t.Error(err)
+	}
+	f1 := NewF(0)
+	f1.UnmarshalBinary(data)
+
+	if !f.Equal(f1) {
+		t.Error("don't match", f, f0)
 	}
 }

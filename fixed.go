@@ -3,7 +3,9 @@ package fixed
 // release under the terms of file license.txt
 
 import (
+	"encoding/binary"
 	"errors"
+	"io"
 	"math"
 	"strconv"
 	"strings"
@@ -25,6 +27,7 @@ var ZERO = Fixed{fp: 0}
 const MAX = float64(99999999999.9999999)
 
 var errTooLarge = errors.New("significand too large")
+var errFormat = errors.New("invalid encoding")
 
 // NewS creates a new Fixed from a string, returning NaN if the string could not be parsed
 func NewS(s string) Fixed {
@@ -308,13 +311,34 @@ func (f Fixed) Frac() float64 {
 	return float64(f.fp%pow7) / float64(pow7)
 }
 
-// do not use will be removed
-func (f Fixed) ToRaw() int64 {
-	return f.fp
+// UnmarshalBinary implements the encoding.BinaryUnmarshaler interface
+func (f *Fixed) UnmarshalBinary(data []byte) error {
+	fp, n := binary.Varint(data)
+	if n < 0 {
+		return errFormat
+	}
+	f.fp = fp
+	return nil
 }
 
-// do not use will be removed
-func FromRaw(i int64) Fixed {
-	f := Fixed{fp: i}
-	return f
+// MarshalBinary implements the encoding.BinaryMarshaler interface.
+func (f Fixed) MarshalBinary() (data []byte, err error) {
+	var buffer [12]byte
+	n := binary.PutVarint(buffer[:], f.fp)
+	return buffer[:n], nil
+}
+
+func (f Fixed) WriteTo(w io.Writer) (int, error) {
+	var buffer [12]byte
+	n := binary.PutVarint(buffer[:], f.fp)
+
+	return w.Write(buffer[:n])
+}
+
+func ReadFrom(r io.ByteReader) (Fixed, error) {
+	fp, err := binary.ReadVarint(r)
+	if err != nil {
+		return NaN, err
+	}
+	return Fixed{fp: fp}, nil
 }
