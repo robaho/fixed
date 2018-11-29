@@ -88,6 +88,10 @@ func TestMaxValue(t *testing.T) {
 	if f0.String() != "99999999999.9999999" {
 		t.Error("should be equal", f0, "99999999999.9999999")
 	}
+	f0 = NewS("99999999999.12345678901234567890")
+	if f0.String() != "99999999999.1234567" {
+		t.Error("should be equal", f0, "99999999999.1234567")
+	}
 
 }
 

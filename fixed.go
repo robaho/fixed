@@ -59,13 +59,20 @@ func NewSErr(s string) (Fixed, error) {
 			i = i * -1
 		}
 		fs := s[period+1:]
-		fs = fs + zeros[:nPlaces-len(fs)]
+		fs = fs + zeros[:max(0, nPlaces-len(fs))]
 		f, _ = strconv.ParseInt(fs[0:nPlaces], 10, 64)
 	}
 	if i > 99999999999 {
 		return NaN, errTooLarge
 	}
 	return Fixed{fp: sign * (i*pow7 + f)}, nil
+}
+
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
 }
 
 func NewF(f float64) Fixed {
