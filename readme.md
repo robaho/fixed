@@ -9,9 +9,19 @@ The library is safe for concurrent use.
 
 It is ideally suited for high performance trading financial systems. All common math operations are completed with 0 allocs.
 
+**Design Goals**
+
+Primarily developed to improve performance in [go-trader](https://github.com/robaho/go-trader).
+Using Fixed rather than decimal.Decimal improves the performance by over 20%, and a lot less GC activity as well.
+You can review these changes under the 'fixed' branch.
+
+If you review the go-trader code, you will quickly see that I use dot imports for the fixed and common packages. Since this
+is a "business/user" app and not systems code, this provides 2 major benefits: less verbose code, and I can easily change the
+implementation of Fixed without changing lots of LOC - just the import statement, and some of the wrapper methods in common.
+
 **Performance**
 
-```
+<pre>
 BenchmarkAddFixed-8         	2000000000	         0.83 ns/op	       0 B/op	       0 allocs/op
 BenchmarkAddDecimal-8       	 3000000	       457 ns/op	     400 B/op	      10 allocs/op
 BenchmarkAddBigInt-8        	100000000	        19.2 ns/op	       0 B/op	       0 allocs/op
@@ -32,6 +42,6 @@ BenchmarkStringFixed-8      	20000000	        99.0 ns/op	      16 B/op	       1 
 BenchmarkStringDecimal-8    	 5000000	       326 ns/op	     144 B/op	       5 allocs/op
 BenchmarkStringBigInt-8     	10000000	       209 ns/op	      80 B/op	       3 allocs/op
 BenchmarkStringBigFloat-8   	 3000000	       571 ns/op	     272 B/op	       8 allocs/op
-```
+</pre>
 
 The "decimal" above is the common [shopspring decimal](https://github.com/shopspring/decimal) library
