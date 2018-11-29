@@ -152,11 +152,44 @@ func (f Fixed) Sub(f0 Fixed) Fixed {
 	return Fixed{fp: f.fp - f0.fp}
 }
 
+func (f Fixed) Abs() Fixed {
+	if f.IsNaN() {
+		return NaN
+	}
+	if f.Sign() >= 0 {
+		return f
+	}
+	f0 := Fixed{fp: f.fp * -1}
+	return f0
+}
+
+func abs(i int64) int64 {
+	if i >= 0 {
+		return i
+	}
+	return i * -1
+}
+
 func (f Fixed) Mul(f0 Fixed) Fixed {
 	if f.IsNaN() || f0.IsNaN() {
 		return NaN
 	}
-	return NewF(f.Float() * f0.Float())
+
+	fp := f.fp
+	fp0 := f0.fp
+
+	var result int64
+
+	fp0a := fp0 / pow7
+	fp0b := fp0 % pow7
+
+	result = fp * (fp0a)
+	if fp0b != 0 {
+		result = result + (fp/pow7)*(fp0b)
+		result = result + (fp%pow7)*(fp0b)
+	}
+
+	return Fixed{fp: result}
 }
 
 func (f Fixed) Div(f0 Fixed) Fixed {

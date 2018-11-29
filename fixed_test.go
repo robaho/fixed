@@ -195,11 +195,45 @@ func TestAddSub(t *testing.T) {
 
 }
 
+func TestAbs(t *testing.T) {
+	f := NewS("NaN")
+	f = f.Abs()
+	if !f.IsNaN() {
+		t.Error("should be NaN", f)
+	}
+	f = NewS("1")
+	f = f.Abs()
+	if f.String() != "1" {
+		t.Error("should be equal", f, "1")
+	}
+	f = NewS("-1")
+	f = f.Abs()
+	if f.String() != "1" {
+		t.Error("should be equal", f, "1")
+	}
+}
+
 func TestMulDiv(t *testing.T) {
 	f0 := NewS("123.456")
 	f1 := NewS("1000")
 
 	f2 := f0.Mul(f1)
+	if f2.String() != "123456" {
+		t.Error("should be equal", f2.String(), "123456")
+	}
+
+	f0 = NewS("123.456")
+	f1 = NewS("-1000")
+
+	f2 = f0.Mul(f1)
+	if f2.String() != "-123456" {
+		t.Error("should be equal", f2.String(), "-123456")
+	}
+
+	f0 = NewS("-123.456")
+	f1 = NewS("-1000")
+
+	f2 = f0.Mul(f1)
 	if f2.String() != "123456" {
 		t.Error("should be equal", f2.String(), "123456")
 	}
@@ -210,6 +244,11 @@ func TestMulDiv(t *testing.T) {
 	f2 = f0.Mul(f1)
 	if f2.String() != "100001000" {
 		t.Error("should be equal", f2.String(), "100001000")
+	}
+
+	f2 = f2.Div(f1)
+	if !f2.Equal(f0) {
+		t.Error("should be equal", f0, f2)
 	}
 
 	f0 = NewS("2")
@@ -302,6 +341,12 @@ func TestNaN(t *testing.T) {
 	if !f0.IsNaN() {
 		t.Error("f0 should be NaN")
 	}
+
+	f0 = NewS("0.0004096")
+	if f0.String() != "0.0004096" {
+		t.Error("should be equal", f0.String(), "0.0004096")
+	}
+
 }
 
 func TestIntFrac(t *testing.T) {
