@@ -251,29 +251,6 @@ func TestOverflow(t *testing.T) {
 	}
 
 }
-func TestNewRound(t *testing.T) {
-
-	f0 := NewRoundF(1.1234567)
-	if f0.String() != "1.1234567" {
-		t.Error("should be equal", f0.String(), "1.1234567")
-	}
-
-	f0 = NewRoundF(1.123456789123)
-	if f0.String() != "1.1234568" {
-		t.Error("should be equal", f0.String(), "1.1234568")
-	}
-
-	f0 = NewRoundF(1.0 / 3.0)
-	if f0.String() != "0.3333333" {
-		t.Error("should be equal", f0.String(), "0.3333333")
-	}
-
-	f0 = NewRoundF(2.0 / 3.0)
-
-	if f0.String() != "0.6666667" {
-		t.Error("should be equal", f0.String(), "0.6666667")
-	}
-}
 
 func TestNaN(t *testing.T) {
 	f0 := NewF(math.NaN())
