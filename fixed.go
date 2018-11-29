@@ -1,5 +1,7 @@
 package fixed
 
+// release under the terms of file license.txt
+
 import (
 	"errors"
 	"math"
@@ -298,10 +300,12 @@ func (f Fixed) Frac() float64 {
 	}
 	return float64(f.fp%pow7) / float64(pow7)
 }
+
 // do not use will be removed
 func (f Fixed) ToRaw() int64 {
 	return f.fp
 }
+
 // do not use will be removed
 func FromRaw(i int64) Fixed {
 	f := Fixed{fp: i}
