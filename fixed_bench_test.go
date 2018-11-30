@@ -1,6 +1,7 @@
 package fixed
 
 import (
+	"bytes"
 	"github.com/shopspring/decimal"
 	"math/big"
 	"testing"
@@ -171,3 +172,12 @@ func BenchmarkStringBigFloat(b *testing.B) {
 	}
 }
 
+func BenchmarkWriteTo(b *testing.B) {
+	f0 := NewF(123456789.0)
+
+	buf := new(bytes.Buffer)
+
+	for i := 0; i < b.N; i++ {
+		f0.WriteTo(buf)
+	}
+}

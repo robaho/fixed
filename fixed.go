@@ -371,17 +371,14 @@ func (f *Fixed) UnmarshalBinary(data []byte) error {
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (f Fixed) MarshalBinary() (data []byte, err error) {
-	var buffer [12]byte
+	var buffer [binary.MaxVarintLen64]byte
 	n := binary.PutVarint(buffer[:], f.fp)
 	return buffer[:n], nil
 }
 
 // WriteTo write the Fixed to an io.Writer, returning the number of bytes written
-func (f Fixed) WriteTo(w io.Writer) (int, error) {
-	var buffer [12]byte
-	n := binary.PutVarint(buffer[:], f.fp)
-
-	return w.Write(buffer[:n])
+func (f Fixed) WriteTo(w io.ByteWriter) error {
+	return putVarint(w, f.fp)
 }
 
 // ReadFrom reads a Fixed from an io.Reader
