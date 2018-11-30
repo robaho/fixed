@@ -400,6 +400,13 @@ func TestStringN(t *testing.T) {
 	if s != "1.10" {
 		t.Error("should be equal", s, "1.10")
 	}
+	f0 = NewS("1")
+	s = f0.StringN(2)
+
+	if s != "1.00" {
+		t.Error("should be equal", s, "1.00")
+	}
+
 	f0 = NewS("1.123")
 	s = f0.StringN(2)
 

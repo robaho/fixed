@@ -262,63 +262,44 @@ func (f Fixed) Cmp(f0 Fixed) int {
 
 // String converts a Fixed to a string, dropping trailing zeros
 func (f Fixed) String() string {
-
-	fp := f.fp
-	if fp == 0 {
-		return "0"
+	s, point := f.tostr()
+	if point == -1 {
+		return s
 	}
-	if fp == nan {
-		return "NaN"
-	}
-
-	var buffer [32]byte
-	b := buffer[:0]
-
-	if fp < 0 {
-		b = append(b, byte('-'))
-		fp *= -1
-	}
-
-	dec := fp / pow7
-	frac := fp % pow7
-
-	b = strconv.AppendInt(b, dec, 10)
-	if frac == 0 {
-		return string(b)
-	} else {
-		var buffer [32]byte
-		b0 := buffer[:0]
-
-		b = append(b, byte('.'))
-		b0 = strconv.AppendInt(b0, frac, 10)
-		b = append(b, []byte(zeros[:nPlaces-len(b0)])...)
-		b = append(b, b0...)
-
-		for l := len(b); l >= 0; l-- {
-			if b[l-1] != '0' {
-				return string(b[:l])
-			}
+	index := len(s) - 1
+	for ; index != point; index-- {
+		if s[index] != '0' {
+			return s[:index+1]
 		}
-		return string(b)
 	}
+	return s[:point]
 }
 
 // StringN converts a Fixed to a String with a specified number of decimal places, truncating as required
 func (f Fixed) StringN(decimals int) string {
 
+	s, point := f.tostr()
+
+	if point == -1 {
+		return s
+	}
+	if decimals == 0 {
+		return s[:point]
+	} else {
+		return s[:point+decimals+1]
+	}
+}
+
+func (f Fixed) tostr() (string, int) {
 	fp := f.fp
 	if fp == 0 {
-		if decimals == 0 {
-			return "0"
-		}
-		return "0." + zeros[nPlaces-decimals:]
+		return "0." + zeros, 1
 	}
 	if fp == nan {
-		return "NaN"
+		return "NaN", -1
 	}
 
-	var buffer [32]byte
-	b := buffer[:0]
+	b := make([]byte, 24)[:0]
 
 	if fp < 0 {
 		b = append(b, byte('-'))
@@ -329,18 +310,35 @@ func (f Fixed) StringN(decimals int) string {
 	frac := fp % pow7
 
 	b = strconv.AppendInt(b, dec, 10)
-	if frac == 0 || decimals == 0 {
-		return string(b)
-	} else {
-		var buffer [32]byte
-		b0 := buffer[:0]
+	b = append(b, byte('.'))
+	point := len(b) - 1
+	digits := digits(frac)
+	b = append(b, []byte(zeros[:nPlaces-digits])...)
+	b = strconv.AppendInt(b, frac, 10)
 
-		b = append(b, byte('.'))
-		b0 = strconv.AppendInt(b0, frac, 10)
-		b = append(b, []byte(zeros[:nPlaces-len(b0)])...)
-		b = append(b, b0[:decimals]...)
-		return string(b)
+	return string(b), point
+}
+
+func digits(n int64) int {
+	if n > 999999 {
+		return 7
 	}
+	if n > 99999 {
+		return 6
+	}
+	if n > 9999 {
+		return 5
+	}
+	if n > 999 {
+		return 4
+	}
+	if n > 99 {
+		return 3
+	}
+	if n > 9 {
+		return 2
+	}
+	return 1
 }
 
 // Int return the integer portion of the Fixed, or 0 if NaN
