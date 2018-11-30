@@ -131,6 +131,7 @@ func (f Fixed) Sign() int {
 	return f.Cmp(ZERO)
 }
 
+// Float converts the Fixed to a float64
 func (f Fixed) Float() float64 {
 	if f.IsNaN() {
 		return math.NaN()
@@ -138,6 +139,7 @@ func (f Fixed) Float() float64 {
 	return float64(f.fp) / float64(pow7)
 }
 
+// Add adds f0 to f producing a Fixed. If either operand is NaN, NaN is returned
 func (f Fixed) Add(f0 Fixed) Fixed {
 	if f.IsNaN() || f0.IsNaN() {
 		return NaN
@@ -145,6 +147,7 @@ func (f Fixed) Add(f0 Fixed) Fixed {
 	return Fixed{fp: f.fp + f0.fp}
 }
 
+// Sub subtracts f0 from f producing a Fixed. If either operand is NaN, NaN is returned
 func (f Fixed) Sub(f0 Fixed) Fixed {
 	if f.IsNaN() || f0.IsNaN() {
 		return NaN
@@ -152,6 +155,7 @@ func (f Fixed) Sub(f0 Fixed) Fixed {
 	return Fixed{fp: f.fp - f0.fp}
 }
 
+// Abs returns the absolute value of f. If f is NaN, NaN is returned
 func (f Fixed) Abs() Fixed {
 	if f.IsNaN() {
 		return NaN
@@ -170,6 +174,7 @@ func abs(i int64) int64 {
 	return i * -1
 }
 
+// Mul multiplies f by f0 returning a Fixed. If either operand is NaN, NaN is returned
 func (f Fixed) Mul(f0 Fixed) Fixed {
 	if f.IsNaN() || f0.IsNaN() {
 		return NaN
@@ -193,6 +198,7 @@ func (f Fixed) Mul(f0 Fixed) Fixed {
 	return Fixed{fp: result}
 }
 
+// Div divides f by f0 returning a Fixed. If either operand is NaN, NaN is returned
 func (f Fixed) Div(f0 Fixed) Fixed {
 	if f.IsNaN() || f0.IsNaN() {
 		return NaN
@@ -200,7 +206,7 @@ func (f Fixed) Div(f0 Fixed) Fixed {
 	return NewF(f.Float() / f0.Float())
 }
 
-// Round returns a rounded (half-up) to n decimal places
+// Round returns a rounded (half-up, away from zero) to n decimal places
 func (f Fixed) Round(n int) Fixed {
 	if f.IsNaN() {
 		return NaN
@@ -218,6 +224,7 @@ func (f Fixed) Round(n int) Fixed {
 	return NewF(float64(f.Int()) + f0)
 }
 
+// Equal returns true if the f == f0. If either operand is NaN, false is returned. Use IsNaN() to test for NaN
 func (f Fixed) Equal(f0 Fixed) bool {
 	if f.IsNaN() || f0.IsNaN() {
 		return false
@@ -225,21 +232,29 @@ func (f Fixed) Equal(f0 Fixed) bool {
 	return f.Cmp(f0) == 0
 }
 
+// GreaterThan tests Cmp() for 1
 func (f Fixed) GreaterThan(f0 Fixed) bool {
 	return f.Cmp(f0) == 1
 }
+
+// GreaterThaOrEqual tests Cmp() for 1 or 0
 func (f Fixed) GreaterThanOrEqual(f0 Fixed) bool {
 	cmp := f.Cmp(f0)
 	return cmp == 1 || cmp == 0
 }
+
+// LessThan tests Cmp() for -1
 func (f Fixed) LessThan(f0 Fixed) bool {
 	return f.Cmp(f0) == -1
 }
+
+// LessThan tests Cmp() for -1 or 0
 func (f Fixed) LessThanOrEqual(f0 Fixed) bool {
 	cmp := f.Cmp(f0)
 	return cmp == -1 || cmp == 0
 }
 
+// Cmp compares two Fixed. If f == f0, return 0. If f > f0, return 1. If f < f0, return -1. If both are NaN, return 0. If f is NaN, return 1. If f0 is NaN, return -1
 func (f Fixed) Cmp(f0 Fixed) int {
 	if f.IsNaN() && f0.IsNaN() {
 		return 0
