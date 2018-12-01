@@ -314,46 +314,35 @@ func (f Fixed) tostr() (string, int) {
 		return "NaN", -1
 	}
 
-	b := make([]byte, 24)[:0]
+	b := make([]byte, 24)
+	b = itoa(b, fp)
 
-	if fp < 0 {
-		b = append(b, byte('-'))
-		fp *= -1
-	}
-
-	dec := fp / pow7
-	frac := fp % pow7
-
-	b = strconv.AppendInt(b, dec, 10)
-	b = append(b, byte('.'))
-	point := len(b) - 1
-	digits := digits(frac)
-	b = append(b, []byte(zeros[:nPlaces-digits])...)
-	b = strconv.AppendInt(b, frac, 10)
-
-	return string(b), point
+	return string(b), len(b) - nPlaces - 1
 }
 
-func digits(n int64) int {
-	if n > 999999 {
-		return 7
+func itoa(buf []byte, val int64) []byte {
+	neg := val < 0
+	if neg {
+		val = val * -1
 	}
-	if n > 99999 {
-		return 6
+
+	i := len(buf) - 1
+	idec := i - nPlaces
+	for val >= 10 || i >= idec {
+		buf[i] = byte(val%10 + '0')
+		i--
+		if i == idec {
+			buf[i] = '.'
+			i--
+		}
+		val /= 10
 	}
-	if n > 9999 {
-		return 5
+	buf[i] = byte(val + '0')
+	if neg {
+		i--
+		buf[i] = '-'
 	}
-	if n > 999 {
-		return 4
-	}
-	if n > 99 {
-		return 3
-	}
-	if n > 9 {
-		return 2
-	}
-	return 1
+	return buf[i:]
 }
 
 // Int return the integer portion of the Fixed, or 0 if NaN
