@@ -409,5 +409,6 @@ func (f *Fixed) UnmarshalJSON(bytes []byte) error {
 
 // MarshalJSON implements the json.Marshaler interface.
 func (f Fixed) MarshalJSON() ([]byte, error) {
-	return []byte(f.String()), nil
+	buffer := make([]byte, 24)
+	return itoa(buffer, f.fp), nil
 }
