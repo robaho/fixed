@@ -17,15 +17,18 @@ type Fixed struct {
 	fp int64
 }
 
+// the following constants can be changed to configure a different number of decimal places - these are
+// the only required changes. only 18 significant digits are supported due to NaN
+
 const nPlaces = 7
-const pow7 = int64(10 * 10 * 10 * 10 * 10 * 10 * 10)
+const scale = int64(10 * 10 * 10 * 10 * 10 * 10 * 10)
 const zeros = "0000000"
-const nan = int64(1 << 62)
+const MAX = float64(99999999999.9999999)
+
+const nan = int64(1<<63 - 1)
 
 var NaN = Fixed{fp: nan}
 var ZERO = Fixed{fp: 0}
-
-const MAX = float64(99999999999.9999999)
 
 var errTooLarge = errors.New("significand too large")
 var errFormat = errors.New("invalid encoding")
@@ -68,10 +71,10 @@ func NewSErr(s string) (Fixed, error) {
 		fs = fs + zeros[:max(0, nPlaces-len(fs))]
 		f, _ = strconv.ParseInt(fs[0:nPlaces], 10, 64)
 	}
-	if i > 99999999999 {
+	if float64(i) > MAX {
 		return NaN, errTooLarge
 	}
-	return Fixed{fp: sign * (i*pow7 + f)}, nil
+	return Fixed{fp: sign * (i*scale + f)}, nil
 }
 
 func max(a, b int) int {
@@ -94,7 +97,7 @@ func NewF(f float64) Fixed {
 		round = -0.5
 	}
 
-	return Fixed{fp: int64(f*float64(pow7) + round)}
+	return Fixed{fp: int64(f*float64(scale) + round)}
 }
 
 // NewI creates a Fixed for an integer, moving the decimal point n places to the left
@@ -136,7 +139,7 @@ func (f Fixed) Float() float64 {
 	if f.IsNaN() {
 		return math.NaN()
 	}
-	return float64(f.fp) / float64(pow7)
+	return float64(f.fp) / float64(scale)
 }
 
 // Add adds f0 to f producing a Fixed. If either operand is NaN, NaN is returned
@@ -180,19 +183,19 @@ func (f Fixed) Mul(f0 Fixed) Fixed {
 		return NaN
 	}
 
-	fp_a := f.fp / pow7
-	fp_b := f.fp % pow7
+	fp_a := f.fp / scale
+	fp_b := f.fp % scale
 
-	fp0_a := f0.fp / pow7
-	fp0_b := f0.fp % pow7
+	fp0_a := f0.fp / scale
+	fp0_b := f0.fp % scale
 
 	var result int64
 
 	if fp0_a != 0 {
-		result = fp_a*fp0_a*pow7 + fp_b*fp0_a
+		result = fp_a*fp0_a*scale + fp_b*fp0_a
 	}
 	if fp0_b != 0 {
-		result = result + (fp_a * fp0_b) + ((fp_b)*fp0_b)/pow7
+		result = result + (fp_a * fp0_b) + ((fp_b)*fp0_b)/scale
 	}
 
 	return Fixed{fp: result}
@@ -350,7 +353,7 @@ func (f Fixed) Int() int64 {
 	if f.IsNaN() {
 		return 0
 	}
-	return f.fp / pow7
+	return f.fp / scale
 }
 
 // Frac return the fractional portion of the Fixed, or NaN if NaN
@@ -358,7 +361,7 @@ func (f Fixed) Frac() float64 {
 	if f.IsNaN() {
 		return math.NaN()
 	}
-	return float64(f.fp%pow7) / float64(pow7)
+	return float64(f.fp%scale) / float64(scale)
 }
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface
