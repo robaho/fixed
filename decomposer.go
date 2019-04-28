@@ -59,7 +59,7 @@ func (f *Fixed) Compose(form byte, negative bool, coefficient []byte, exponent i
 	var c uint64
 	for i, v := range coefficient {
 		if i < 8 {
-			c |= uint64(v) << (i * 8)
+			c |= uint64(v) << (uint(i) * 8)
 		} else if v != 0 {
 			return fmt.Errorf("coefficent too large")
 		}
