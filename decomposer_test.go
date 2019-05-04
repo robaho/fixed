@@ -48,13 +48,14 @@ func TestDecomposerCompose(t *testing.T) {
 		Err bool // Expect an error.
 	}{
 		{N: "Zero", S: "0", Coef: nil, Exp: 0},
-		{N: "Normal-1", S: "123.456", Coef: []byte{0x40, 0xE2, 0x01}, Exp: -3},
-		{N: "Neg-1", S: "-123.456", Neg: true, Coef: []byte{0x40, 0xE2, 0x01}, Exp: -3},
-		{N: "PosExp-1", S: "123456000", Coef: []byte{0x40, 0xE2, 0x01}, Exp: 3},
-		{N: "PosExp-2", S: "-123456000", Neg: true, Coef: []byte{0x40, 0xE2, 0x01}, Exp: 3},
-		{N: "AllDec-1", S: "0.123456", Coef: []byte{0x40, 0xE2, 0x01}, Exp: -6},
-		{N: "AllDec-2", S: "-0.123456", Neg: true, Coef: []byte{0x40, 0xE2, 0x01}, Exp: -6},
-		{N: "TooSmall-1", S: "-0.00123456", Neg: true, Coef: []byte{0x40, 0xE2, 0x01}, Exp: -8, Err: true},
+		{N: "Normal-1", S: "123.456", Coef: []byte{0x01, 0xE2, 0x40}, Exp: -3},
+		{N: "Neg-1", S: "-123.456", Neg: true, Coef: []byte{0x01, 0xE2, 0x40}, Exp: -3},
+		{N: "PosExp-1", S: "123456000", Coef: []byte{0x01, 0xE2, 0x40}, Exp: 3},
+		{N: "PosExp-2", S: "-123456000", Neg: true, Coef: []byte{0x01, 0xE2, 0x40}, Exp: 3},
+		{N: "AllDec-1", S: "0.123456", Coef: []byte{0x01, 0xE2, 0x40}, Exp: -6},
+		{N: "AllDec-2", S: "-0.123456", Neg: true, Coef: []byte{0x01, 0xE2, 0x40}, Exp: -6},
+		{N: "TooSmall-1", S: "-0.00123456", Neg: true, Coef: []byte{0x01, 0xE2, 0x40}, Exp: -8, Err: true},
+		{N: "LeadingZero-1", S: "123.456", Coef: []byte{0, 0, 0, 0, 0, 0, 0, 0x01, 0xE2, 0x40}, Exp: -3},
 		{N: "NaN-1", S: "NaN", Form: 2},
 	}
 

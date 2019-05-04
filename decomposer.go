@@ -30,7 +30,7 @@ func (f Fixed) Decompose(buf []byte) (form byte, negative bool, coefficient []by
 	} else {
 		coefficient = make([]byte, 8)
 	}
-	binary.LittleEndian.PutUint64(coefficient, uint64(c))
+	binary.BigEndian.PutUint64(coefficient, uint64(c))
 	exponent = -nPlaces
 	return
 }
@@ -57,7 +57,9 @@ func (f *Fixed) Compose(form byte, negative bool, coefficient []byte, exponent i
 	// Finite form.
 
 	var c uint64
-	for i, v := range coefficient {
+	maxi := len(coefficient) - 1
+	for i := range coefficient {
+		v := coefficient[maxi-i]
 		if i < 8 {
 			c |= uint64(v) << (uint(i) * 8)
 		} else if v != 0 {
