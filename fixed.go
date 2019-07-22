@@ -55,21 +55,33 @@ func NewSErr(s string) (Fixed, error) {
 	var i int64
 	var f int64
 	var sign int64 = 1
+	var err error
 	if period == -1 {
-		i, _ = strconv.ParseInt(s, 10, 64)
+		i, err = strconv.ParseInt(s, 10, 64)
+		if err != nil {
+			return NaN, errors.New("cannot parse")
+		}
 		if i < 0 {
 			sign = -1
 			i = i * -1
 		}
 	} else {
-		i, _ = strconv.ParseInt(s[:period], 10, 64)
-		if i < 0 {
-			sign = -1
-			i = i * -1
+		if len(s[:period]) > 0 {
+			i, err = strconv.ParseInt(s[:period], 10, 64)
+			if err != nil {
+				return NaN, errors.New("cannot parse")
+			}
+			if i < 0 {
+				sign = -1
+				i = i * -1
+			}
 		}
 		fs := s[period+1:]
 		fs = fs + zeros[:max(0, nPlaces-len(fs))]
-		f, _ = strconv.ParseInt(fs[0:nPlaces], 10, 64)
+		f, err = strconv.ParseInt(fs[0:nPlaces], 10, 64)
+		if err != nil {
+			return NaN, errors.New("cannot parse")
+		}
 	}
 	if float64(i) > MAX {
 		return NaN, errTooLarge

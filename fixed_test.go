@@ -41,6 +41,26 @@ func TestBasic(t *testing.T) {
 	}
 }
 
+func TestParse(t *testing.T) {
+	_, err := Parse("123")
+	if err != nil {
+		t.Fail()
+	}
+	_, err = Parse("abc")
+	if err == nil {
+		t.Fail()
+	}
+}
+
+func TestMustParse(t *testing.T) {
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("The code did not panic")
+		}
+	}()
+	_ = MustParse("abc")
+}
+
 func TestNewI(t *testing.T) {
 	f := NewI(123, 1)
 	if f.String() != "12.3" {
