@@ -77,6 +77,21 @@ func NewSErr(s string) (Fixed, error) {
 	return Fixed{fp: sign * (i*scale + f)}, nil
 }
 
+// Parse creates a new Fixed from a string, returning NaN, and error if the string could not be parsed. Same as NewSErr
+// but more standard naming
+func Parse(s string) (Fixed, error) {
+	return NewSErr(s)
+}
+
+// MustParse creates a new Fixed from a string, and panics if the string could not be parsed
+func MustParse(s string) Fixed {
+	f, err := NewSErr(s)
+	if err != nil {
+		panic(err)
+	}
+	return f
+}
+
 func max(a, b int) int {
 	if a > b {
 		return a
