@@ -428,6 +428,10 @@ func (f *Fixed) UnmarshalJSON(bytes []byte) error {
 	if s == "null" {
 		return nil
 	}
+	if s == "\"NaN\"" {
+		*f = NaN
+		return nil
+	}
 
 	fixed, err := NewSErr(s)
 	*f = fixed
@@ -439,6 +443,9 @@ func (f *Fixed) UnmarshalJSON(bytes []byte) error {
 
 // MarshalJSON implements the json.Marshaler interface.
 func (f Fixed) MarshalJSON() ([]byte, error) {
+	if f.IsNaN() {
+		return []byte("\"NaN\""), nil
+	}
 	buffer := make([]byte, 24)
 	return itoa(buffer, f.fp), nil
 }

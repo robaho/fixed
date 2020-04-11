@@ -538,3 +538,31 @@ func TestJSON(t *testing.T) {
 		t.Error("don't match", j.F, f)
 	}
 }
+
+func TestJSON_NaN(t *testing.T) {
+	j := JStruct{}
+
+	f := NewS("NaN")
+	j.F = f
+
+	var buf bytes.Buffer
+	enc := json.NewEncoder(&buf)
+
+	err := enc.Encode(&j)
+	if err != nil {
+		t.Error(err)
+	}
+
+	j.F = ZERO
+
+	dec := json.NewDecoder(&buf)
+
+	err = dec.Decode(&j)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if !j.F.IsNaN() {
+		t.Error("did not decode NaN", j.F, f)
+	}
+}
