@@ -3,29 +3,40 @@ package fixed_test
 import (
 	"bytes"
 	"encoding/json"
-	. "github.com/robaho/fixed"
 	"math"
 	"testing"
+
+	. "github.com/robaho/fixed"
 )
 
 func TestBasic(t *testing.T) {
-	f0 := NewS("123.456")
-	f1 := NewS("123.456")
-
-	if !f0.Equal(f1) {
-		t.Error("should be equal", f0, f1)
+	testCases := []string{
+		"123.456",
+		"123.456",
+		"-123.456",
+		"0.456",
+		"-0.456",
 	}
 
-	if f0.Int() != 123 {
-		t.Error("should be equal", f0.Int(), 123)
+	var fs []Fixed
+	for _, s := range testCases {
+		f := NewS(s)
+		if f.String() != s {
+			t.Error("should be equal", f.String(), s)
+		}
+		fs = append(fs, f)
 	}
 
-	if f0.String() != "123.456" {
-		t.Error("should be equal", f0.String(), "123.456")
+	if !fs[0].Equal(fs[1]) {
+		t.Error("should be equal", fs[0], fs[1])
 	}
 
-	f0 = NewF(1)
-	f1 = NewF(.5).Add(NewF(.5))
+	if fs[0].Int() != 123 {
+		t.Error("should be equal", fs[0].Int(), 123)
+	}
+
+	f0 := NewF(1)
+	f1 := NewF(.5).Add(NewF(.5))
 	f2 := NewF(.3).Add(NewF(.3)).Add(NewF(.4))
 
 	if !f0.Equal(f1) {
