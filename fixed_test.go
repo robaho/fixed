@@ -52,6 +52,18 @@ func TestBasic(t *testing.T) {
 	}
 }
 
+func TestNegative(t *testing.T) {
+	f0 := NewS("-0.5")
+	if !f0.Equal(NewF(-.5)) {
+		t.Error("should be -0.5", f0)
+	}
+	f1 := NewS("-0.5")
+	f2 := f0.Add(f1)
+	if !f2.Equal(MustParse("-1")) {
+		t.Error("should be -1", f2)
+	}
+}
+
 func TestParse(t *testing.T) {
 	_, err := Parse("123")
 	if err != nil {
