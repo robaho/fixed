@@ -71,7 +71,7 @@ func NewSErr(s string) (Fixed, error) {
 			if err != nil {
 				return NaN, errors.New("cannot parse")
 			}
-			if i < 0 {
+			if i < 0 || s[0] == '-' {
 				sign = -1
 				i = i * -1
 			}
