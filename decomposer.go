@@ -1,3 +1,6 @@
+//go:build !sql_scanner
+// +build !sql_scanner
+
 package fixed
 
 import (
