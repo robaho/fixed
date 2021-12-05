@@ -55,3 +55,9 @@ BenchmarkWriteTo-2          	20000000	        69.9 ns/op	      27 B/op	       0 
 </pre>
 
 The "decimal" above is the common [shopspring decimal](https://github.com/shopspring/decimal) library
+
+**Compatibility with SQL drivers**
+
+By default `Fixed` implements `decomposer.Decimal` interface for database
+drivers that support it. To use `sql.Scanner` and `driver.Valuer`
+implementation flag `sql_scanner` must be specified on build.
