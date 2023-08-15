@@ -462,6 +462,14 @@ func TestStringN(t *testing.T) {
 	if s != "1.12" {
 		t.Error("should be equal", s, "1.12")
 	}
+
+	f0 = NewS("1.127")
+	s = f0.StringN(2)
+
+	if s != "1.12" {
+		t.Error("should be equal", s, "1.12")
+	}
+
 	f0 = NewS("1.123")
 	s = f0.StringN(0)
 
@@ -500,6 +508,21 @@ func TestRound(t *testing.T) {
 	if f1.String() != "-1.1235" {
 		t.Error("should be equal", f1, "-1.1235")
 	}
+
+	f0 = NewS("-0.0001")
+	f1 = f0.Round(1)
+
+	if f1.String() != "0" {
+		t.Error("should be equal", f1, "0")
+	}
+
+	f0 = NewS("2234.565")
+	f1 = f0.Round(2)
+
+	if f1.String() != "2234.57" {
+		t.Error("should be equal", f1, "2234.57")
+	}
+
 }
 
 func TestEncodeDecode(t *testing.T) {

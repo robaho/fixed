@@ -153,7 +153,6 @@ func (f Fixed) IsZero() bool {
 //	-1 if f <  0
 //	 0 if f == 0 or NaN
 //	+1 if f >  0
-//
 func (f Fixed) Sign() int {
 	if f.IsNaN() {
 		return 0
@@ -236,22 +235,32 @@ func (f Fixed) Div(f0 Fixed) Fixed {
 	return NewF(f.Float() / f0.Float())
 }
 
+func sign(fp int64) int64 {
+	if fp < 0 {
+		return -1
+	}
+	return 1
+}
+
 // Round returns a rounded (half-up, away from zero) to n decimal places
 func (f Fixed) Round(n int) Fixed {
 	if f.IsNaN() {
 		return NaN
 	}
 
-	round := .5
-	if f.fp < 0 {
-		round = -0.5
+	fraction := f.fp % scale
+	f0 := fraction / int64(math.Pow10(nPlaces-n-1))
+	digit := abs(f0 % 10)
+	f0 = (f0 / 10)
+	if digit >= 5 {
+		f0 += 1 * sign(f.fp)
 	}
+	f0 = f0 * int64(math.Pow10(nPlaces-n))
 
-	f0 := f.Frac()
-	f0 = f0*math.Pow10(n) + round
-	f0 = float64(int(f0)) / math.Pow10(n)
+	intpart := f.fp - fraction
+	fp := intpart + f0
 
-	return NewF(float64(f.Int()) + f0)
+	return Fixed{fp: fp}
 }
 
 // Equal returns true if the f == f0. If either operand is NaN, false is returned. Use IsNaN() to test for NaN
