@@ -26,32 +26,33 @@ The fixed.Fixed API uses NaN for reporting errors in the common case, since ofte
 and this would be a huge pain with error handling. Since all operations involving a NaN result in a NaN,
  any errors quickly surface anyway.
 
-
-**Performance**
+**Performance** 
 
 <pre>
-BenchmarkAddFixed-2         	2000000000	         0.85 ns/op	       0 B/op	       0 allocs/op
-BenchmarkAddDecimal-2       	 3000000	       472 ns/op	     400 B/op	      10 allocs/op
-BenchmarkAddBigInt-2        	100000000	        18.8 ns/op	       0 B/op	       0 allocs/op
-BenchmarkAddBigFloat-2      	20000000	       109 ns/op	      48 B/op	       1 allocs/op
-BenchmarkMulFixed-2         	200000000	         6.14 ns/op	       0 B/op	       0 allocs/op
-BenchmarkMulDecimal-2       	20000000	        96.0 ns/op	      80 B/op	       2 allocs/op
-BenchmarkMulBigInt-2        	100000000	        22.2 ns/op	       0 B/op	       0 allocs/op
-BenchmarkMulBigFloat-2      	30000000	        50.9 ns/op	       0 B/op	       0 allocs/op
-BenchmarkDivFixed-2         	100000000	        19.8 ns/op	       0 B/op	       0 allocs/op
-BenchmarkDivDecimal-2       	 1000000	      1206 ns/op	     928 B/op	      22 allocs/op
-BenchmarkDivBigInt-2        	20000000	        67.6 ns/op	      48 B/op	       1 allocs/op
-BenchmarkDivBigFloat-2      	10000000	       148 ns/op	      64 B/op	       2 allocs/op
-BenchmarkCmpFixed-2         	2000000000	         0.28 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCmpDecimal-2       	100000000	        10.8 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCmpBigInt-2        	200000000	         8.10 ns/op	       0 B/op	       0 allocs/op
-BenchmarkCmpBigFloat-2      	200000000	         8.39 ns/op	       0 B/op	       0 allocs/op
-BenchmarkStringFixed-2      	20000000	        76.1 ns/op	      32 B/op	       1 allocs/op
-BenchmarkStringNFixed-2     	20000000	        72.9 ns/op	      32 B/op	       1 allocs/op
-BenchmarkStringDecimal-2    	 5000000	       328 ns/op	     144 B/op	       5 allocs/op
-BenchmarkStringBigInt-2     	10000000	       212 ns/op	      80 B/op	       3 allocs/op
-BenchmarkStringBigFloat-2   	 3000000	       568 ns/op	     272 B/op	       8 allocs/op
-BenchmarkWriteTo-2          	20000000	        69.9 ns/op	      27 B/op	       0 allocs/op
+using Go 1.21.5
+cpu: Intel(R) Core(TM) i7-6700K CPU @ 4.00GHz
+BenchmarkAddFixed-8             1000000000               0.9627 ns/op          0 B/op          0 allocs/op
+BenchmarkAddDecimal-8           17871763                66.52 ns/op           80 B/op          2 allocs/op
+BenchmarkAddBigInt-8            125826048                9.562 ns/op           0 B/op          0 allocs/op
+BenchmarkAddBigFloat-8          18763552                63.51 ns/op           48 B/op          1 allocs/op
+BenchmarkMulFixed-8             335886367                3.538 ns/op           0 B/op          0 allocs/op
+BenchmarkMulDecimal-8           18164803                66.12 ns/op           80 B/op          2 allocs/op
+BenchmarkMulBigInt-8            100000000               10.41 ns/op            0 B/op          0 allocs/op
+BenchmarkMulBigFloat-8          50151100                23.93 ns/op            0 B/op          0 allocs/op
+BenchmarkDivFixed-8             328157694                3.722 ns/op           0 B/op          0 allocs/op
+BenchmarkDivDecimal-8            2558497               461.7 ns/op           384 B/op         12 allocs/op
+BenchmarkDivBigInt-8            33726384                34.68 ns/op            8 B/op          1 allocs/op
+BenchmarkDivBigFloat-8          10757650               110.1 ns/op            24 B/op          2 allocs/op
+BenchmarkCmpFixed-8             1000000000               0.2519 ns/op          0 B/op          0 allocs/op
+BenchmarkCmpDecimal-8           171236422                6.926 ns/op           0 B/op          0 allocs/op
+BenchmarkCmpBigInt-8            250970304                4.791 ns/op           0 B/op          0 allocs/op
+BenchmarkCmpBigFloat-8          271898336                4.428 ns/op           0 B/op          0 allocs/op
+BenchmarkStringFixed-8          23637406                50.30 ns/op           24 B/op          1 allocs/op
+BenchmarkStringNFixed-8         23457960                51.85 ns/op           24 B/op          1 allocs/op
+BenchmarkStringDecimal-8         5763308               210.2 ns/op            56 B/op          4 allocs/op
+BenchmarkStringBigInt-8         11742596               114.0 ns/op            16 B/op          1 allocs/op
+BenchmarkStringBigFloat-8        3003280               395.3 ns/op           176 B/op          7 allocs/op
+BenchmarkWriteTo-8              38573978                43.13 ns/op           27 B/op          0 allocs/op
 </pre>
 
 The "decimal" above is the common [shopspring decimal](https://github.com/shopspring/decimal) library
