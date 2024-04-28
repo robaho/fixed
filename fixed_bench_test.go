@@ -14,6 +14,7 @@ func BenchmarkAddFixed(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		f1 = f1.Add(f0)
 	}
+	b.Log(f1)
 }
 func BenchmarkAddDecimal(b *testing.B) {
 	f0 := decimal.NewFromFloat(1)
@@ -22,6 +23,7 @@ func BenchmarkAddDecimal(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		f1 = f1.Add(f0)
 	}
+	b.Log(f1)
 }
 func BenchmarkAddBigInt(b *testing.B) {
 	f0 := big.NewInt(1)
@@ -30,6 +32,7 @@ func BenchmarkAddBigInt(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		f1 = f1.Add(f1, f0)
 	}
+	b.Log(f1)
 }
 func BenchmarkAddBigFloat(b *testing.B) {
 	f0 := big.NewFloat(1)
@@ -38,6 +41,7 @@ func BenchmarkAddBigFloat(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		f1 = f1.Add(f1, f0)
 	}
+	b.Log(f1)
 }
 
 func BenchmarkMulFixed(b *testing.B) {
@@ -47,6 +51,7 @@ func BenchmarkMulFixed(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		f0.Mul(f1)
 	}
+	b.Log(f0)
 }
 func BenchmarkMulDecimal(b *testing.B) {
 	f0 := decimal.NewFromFloat(123456789.0)
@@ -55,6 +60,7 @@ func BenchmarkMulDecimal(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		f0.Mul(f1)
 	}
+	b.Log(f0)
 }
 func BenchmarkMulBigInt(b *testing.B) {
 	f0 := big.NewInt(123456789)
@@ -64,6 +70,7 @@ func BenchmarkMulBigInt(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		x.Mul(f0, f1)
 	}
+	b.Log(x)
 }
 func BenchmarkMulBigFloat(b *testing.B) {
 	f0 := big.NewFloat(123456789.0)
@@ -73,6 +80,7 @@ func BenchmarkMulBigFloat(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		x.Mul(f0, f1)
 	}
+	b.Log(x)
 }
 
 func BenchmarkDivFixed(b *testing.B) {
@@ -82,6 +90,7 @@ func BenchmarkDivFixed(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		f0.Div(f1)
 	}
+	b.Log(f0)
 }
 func BenchmarkDivDecimal(b *testing.B) {
 	f0 := decimal.NewFromFloat(123456789.0)
@@ -90,6 +99,7 @@ func BenchmarkDivDecimal(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		f0.Div(f1)
 	}
+	b.Log(f0)
 }
 func BenchmarkDivBigInt(b *testing.B) {
 	f0 := big.NewInt(123456789)
@@ -99,6 +109,7 @@ func BenchmarkDivBigInt(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		x.Div(f0, f1)
 	}
+	b.Log(x)
 }
 func BenchmarkDivBigFloat(b *testing.B) {
 	f0 := big.NewFloat(123456789.0)
@@ -108,39 +119,48 @@ func BenchmarkDivBigFloat(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		x.Quo(f0, f1)
 	}
+	b.Log(x)
 }
 
 func BenchmarkCmpFixed(b *testing.B) {
 	f0 := NewF(123456789.0)
 	f1 := NewF(1234.0)
 
+	var i int64
 	for i := 0; i < b.N; i++ {
 		f0.Cmp(f1)
 	}
+	b.Log(i)
 }
 func BenchmarkCmpDecimal(b *testing.B) {
 	f0 := decimal.NewFromFloat(123456789.0)
 	f1 := decimal.NewFromFloat(1234.0)
 
+	var i int64
 	for i := 0; i < b.N; i++ {
-		f0.Cmp(f1)
+		i += f0.Cmp(f1)
 	}
+	b.Log(i)
 }
 func BenchmarkCmpBigInt(b *testing.B) {
 	f0 := big.NewInt(123456789)
 	f1 := big.NewInt(1234)
 
+	var i int64
 	for i := 0; i < b.N; i++ {
-		f0.Cmp(f1)
+		i += f0.Cmp(f1)
 	}
+	b.Log(i)
 }
 func BenchmarkCmpBigFloat(b *testing.B) {
 	f0 := big.NewFloat(123456789.0)
 	f1 := big.NewFloat(1234.0)
 
+	var i int64
 	for i := 0; i < b.N; i++ {
-		f0.Cmp(f1)
+		i += f0.Cmp(f1)
 	}
+	b.Log(i)
 }
 
 func BenchmarkStringFixed(b *testing.B) {
@@ -187,4 +207,5 @@ func BenchmarkWriteTo(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		f0.WriteTo(buf)
 	}
+	b.Log(buf.String())
 }
