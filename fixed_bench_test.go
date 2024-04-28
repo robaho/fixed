@@ -2,10 +2,13 @@ package fixed
 
 import (
 	"bytes"
-	"github.com/shopspring/decimal"
 	"math/big"
 	"testing"
+
+	"github.com/shopspring/decimal"
 )
+
+var Result Fixed
 
 func BenchmarkAddFixed(b *testing.B) {
 	f0 := NewF(1)
@@ -14,6 +17,7 @@ func BenchmarkAddFixed(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		f1 = f1.Add(f0)
 	}
+	Result = f1
 }
 func BenchmarkAddDecimal(b *testing.B) {
 	f0 := decimal.NewFromFloat(1)
