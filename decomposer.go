@@ -16,14 +16,14 @@ import (
 // If the provided buf has sufficient capacity, buf may be returned as the coefficient with
 // the value set and length set as appropriate.
 func (f Fixed) Decompose(buf []byte) (form byte, negative bool, coefficient []byte, exponent int32) {
-	if f.fp == nan {
+	if f == NaN {
 		form = 2
 		return
 	}
-	if f.fp == 0 {
+	if f == 0 {
 		return
 	}
-	c := f.fp
+	c := f
 	if c < 0 {
 		negative = true
 		c = -c
@@ -51,10 +51,10 @@ func (f *Fixed) Compose(form byte, negative bool, coefficient []byte, exponent i
 		// Finite form, see below.
 	case 1:
 		// Infinite form, turn into NaN.
-		f.fp = nan
+		*f = NaN
 		return nil
 	case 2:
-		f.fp = nan
+		*f = NaN
 		return nil
 	}
 	// Finite form.
@@ -91,9 +91,9 @@ func (f *Fixed) Compose(form byte, negative bool, coefficient []byte, exponent i
 			return fmt.Errorf("enable to store decimal, too large")
 		}
 	}
-	f.fp = int64(c)
+	*f = Fixed(c)
 	if negative {
-		f.fp = -f.fp
+		*f = -*f
 	}
 	return nil
 }

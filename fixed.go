@@ -13,22 +13,21 @@ import (
 )
 
 // Fixed is a fixed precision 38.24 number (supports 11.7 digits). It supports NaN.
-type Fixed struct {
-	fp int64
-}
+type Fixed int64
 
 // the following constants can be changed to configure a different number of decimal places - these are
 // the only required changes. only 18 significant digits are supported due to NaN
 
 const nPlaces = 7
 const scale = int64(10 * 10 * 10 * 10 * 10 * 10 * 10)
+const scaleF = Fixed(scale)
 const zeros = "0000000"
 const MAX = float64(99999999999.9999999)
 
 const nan = int64(1<<63 - 1)
 
-var NaN = Fixed{fp: nan}
-var ZERO = Fixed{fp: 0}
+var NaN = Fixed(nan)
+var ZERO = Fixed(0)
 
 var errTooLarge = errors.New("significand too large")
 var errFormat = errors.New("invalid encoding")
@@ -86,7 +85,7 @@ func NewSErr(s string) (Fixed, error) {
 	if float64(i) > MAX {
 		return NaN, errTooLarge
 	}
-	return Fixed{fp: sign * (i*scale + f)}, nil
+	return Fixed(sign * (i*scale + f)), nil
 }
 
 // Parse creates a new Fixed from a string, returning NaN, and error if the string could not be parsed. Same as NewSErr
@@ -114,7 +113,7 @@ func max(a, b int) int {
 // NewF creates a Fixed from an float64, rounding at the 8th decimal place
 func NewF(f float64) Fixed {
 	if math.IsNaN(f) {
-		return Fixed{fp: nan}
+		return NaN
 	}
 	if f >= MAX || f <= -MAX {
 		return NaN
@@ -124,7 +123,7 @@ func NewF(f float64) Fixed {
 		round = -0.5
 	}
 
-	return Fixed{fp: int64(f*float64(scale) + round)}
+	return Fixed(int64(f*float64(scale) + round))
 }
 
 // NewI creates a Fixed for an integer, moving the decimal point n places to the left
@@ -137,11 +136,11 @@ func NewI(i int64, n uint) Fixed {
 
 	i = i * int64(math.Pow10(int(nPlaces-n)))
 
-	return Fixed{fp: i}
+	return Fixed(i)
 }
 
 func (f Fixed) IsNaN() bool {
-	return f.fp == nan
+	return f == NaN
 }
 
 func (f Fixed) IsZero() bool {
@@ -165,7 +164,7 @@ func (f Fixed) Float() float64 {
 	if f.IsNaN() {
 		return math.NaN()
 	}
-	return float64(f.fp) / float64(scale)
+	return float64(f) / float64(scale)
 }
 
 // Add adds f0 to f producing a Fixed. If either operand is NaN, NaN is returned
@@ -173,7 +172,7 @@ func (f Fixed) Add(f0 Fixed) Fixed {
 	if f.IsNaN() || f0.IsNaN() {
 		return NaN
 	}
-	return Fixed{fp: f.fp + f0.fp}
+	return Fixed(f + f0)
 }
 
 // Sub subtracts f0 from f producing a Fixed. If either operand is NaN, NaN is returned
@@ -181,7 +180,7 @@ func (f Fixed) Sub(f0 Fixed) Fixed {
 	if f.IsNaN() || f0.IsNaN() {
 		return NaN
 	}
-	return Fixed{fp: f.fp - f0.fp}
+	return Fixed(f - f0)
 }
 
 // Abs returns the absolute value of f. If f is NaN, NaN is returned
@@ -192,8 +191,7 @@ func (f Fixed) Abs() Fixed {
 	if f.Sign() >= 0 {
 		return f
 	}
-	f0 := Fixed{fp: f.fp * -1}
-	return f0
+	return Fixed(f * -1)
 }
 
 func abs(i int64) int64 {
@@ -209,22 +207,22 @@ func (f Fixed) Mul(f0 Fixed) Fixed {
 		return NaN
 	}
 
-	fp_a := f.fp / scale
-	fp_b := f.fp % scale
+	fp_a := f / scaleF
+	fp_b := f % scaleF
 
-	fp0_a := f0.fp / scale
-	fp0_b := f0.fp % scale
+	fp0_a := f0 / scaleF
+	fp0_b := f0 % scaleF
 
-	var result int64
+	var result Fixed
 
 	if fp0_a != 0 {
-		result = fp_a*fp0_a*scale + fp_b*fp0_a
+		result = fp_a*fp0_a*scaleF + fp_b*fp0_a
 	}
 	if fp0_b != 0 {
-		result = result + (fp_a * fp0_b) + ((fp_b)*fp0_b)/scale
+		result = result + (fp_a * fp0_b) + ((fp_b)*fp0_b)/scaleF
 	}
 
-	return Fixed{fp: result}
+	return result
 }
 
 // Div divides f by f0 returning a Fixed. If either operand is NaN, NaN is returned
@@ -248,19 +246,19 @@ func (f Fixed) Round(n int) Fixed {
 		return NaN
 	}
 
-	fraction := f.fp % scale
+	fraction := int64(f) % scale
 	f0 := fraction / int64(math.Pow10(nPlaces-n-1))
 	digit := abs(f0 % 10)
 	f0 = (f0 / 10)
 	if digit >= 5 {
-		f0 += 1 * sign(f.fp)
+		f0 += 1 * sign(int64(f))
 	}
 	f0 = f0 * int64(math.Pow10(nPlaces-n))
 
-	intpart := f.fp - fraction
+	intpart := int64(f) - fraction
 	fp := intpart + f0
 
-	return Fixed{fp: fp}
+	return Fixed(fp)
 }
 
 // Equal returns true if the f == f0. If either operand is NaN, false is returned. Use IsNaN() to test for NaN
@@ -305,10 +303,10 @@ func (f Fixed) Cmp(f0 Fixed) int {
 		return -1
 	}
 
-	if f.fp == f0.fp {
+	if f == f0 {
 		return 0
 	}
-	if f.fp < f0.fp {
+	if f < f0 {
 		return -1
 	}
 	return 1
@@ -345,16 +343,16 @@ func (f Fixed) StringN(decimals int) string {
 }
 
 func (f Fixed) tostr() (string, int) {
-	fp := f.fp
+	fp := f
 	if fp == 0 {
 		return "0." + zeros, 1
 	}
-	if fp == nan {
+	if fp == NaN {
 		return "NaN", -1
 	}
 
 	b := make([]byte, 24)
-	b = itoa(b, fp)
+	b = itoa(b, int64(fp))
 
 	return string(b), len(b) - nPlaces - 1
 }
@@ -389,7 +387,7 @@ func (f Fixed) Int() int64 {
 	if f.IsNaN() {
 		return 0
 	}
-	return f.fp / scale
+	return int64(f) / scale
 }
 
 // Frac return the fractional portion of the Fixed, or NaN if NaN
@@ -397,7 +395,7 @@ func (f Fixed) Frac() float64 {
 	if f.IsNaN() {
 		return math.NaN()
 	}
-	return float64(f.fp%scale) / float64(scale)
+	return float64(f%scaleF) / float64(scale)
 }
 
 // UnmarshalBinary implements the encoding.BinaryUnmarshaler interface
@@ -406,20 +404,20 @@ func (f *Fixed) UnmarshalBinary(data []byte) error {
 	if n < 0 {
 		return errFormat
 	}
-	f.fp = fp
+	*f = Fixed(fp)
 	return nil
 }
 
 // MarshalBinary implements the encoding.BinaryMarshaler interface.
 func (f Fixed) MarshalBinary() (data []byte, err error) {
 	var buffer [binary.MaxVarintLen64]byte
-	n := binary.PutVarint(buffer[:], f.fp)
+	n := binary.PutVarint(buffer[:], int64(f))
 	return buffer[:n], nil
 }
 
 // WriteTo write the Fixed to an io.Writer, returning the number of bytes written
 func (f Fixed) WriteTo(w io.ByteWriter) error {
-	return writeVarint(w, f.fp)
+	return writeVarint(w, int64(f))
 }
 
 // ReadFrom reads a Fixed from an io.Reader
@@ -428,7 +426,7 @@ func ReadFrom(r io.ByteReader) (Fixed, error) {
 	if err != nil {
 		return NaN, err
 	}
-	return Fixed{fp: fp}, nil
+	return Fixed(fp), nil
 }
 
 // UnmarshalJSON implements the json.Unmarshaler interface.
@@ -456,5 +454,5 @@ func (f Fixed) MarshalJSON() ([]byte, error) {
 		return []byte("\"NaN\""), nil
 	}
 	buffer := make([]byte, 24)
-	return itoa(buffer, f.fp), nil
+	return itoa(buffer, int64(f)), nil
 }
