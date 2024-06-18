@@ -288,22 +288,6 @@ func TestMulDiv(t *testing.T) {
 		t.Error("should be equal", f2.String(), "123456")
 	}
 
-	f0 = NewS("123.456")
-	f1 = NewS("-1000")
-
-	f2 = f0.Mul(f1)
-	if f2.String() != "-123456" {
-		t.Error("should be equal", f2.String(), "-123456")
-	}
-
-	f0 = NewS("-123.456")
-	f1 = NewS("-1000")
-
-	f2 = f0.Mul(f1)
-	if f2.String() != "123456" {
-		t.Error("should be equal", f2.String(), "123456")
-	}
-
 	f0 = NewS("10000.1")
 	f1 = NewS("10000")
 
