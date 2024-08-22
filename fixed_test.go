@@ -357,6 +357,14 @@ func TestMulDiv(t *testing.T) {
 		t.Error("should be equal", f2.String(), "0.0000001")
 	}
 
+	f0 = NewS("-0.000001")
+	f1 = NewS("0.066248")
+
+	f2 = f0.Mul(f1)
+	if f2.String() != "-0.0000001" {
+		t.Error("should be equal", f2.String(), "-0.0000001")
+	}
+
 
 }
 
@@ -511,6 +519,12 @@ func TestRound(t *testing.T) {
 
 	if f1.String() != "-1.123" {
 		t.Error("should be equal", f1, "-1.123")
+	}
+	f0 = NewS("-1.1235")
+	f1 = f0.Round(3)
+
+	if f1.String() != "-1.124" {
+		t.Error("should be equal", f1, "-1.124")
 	}
 	f1 = f0.Round(4)
 

@@ -215,13 +215,15 @@ func (f Fixed) Mul(f0 Fixed) Fixed {
 	fp0_a := f0.fp / scale
 	fp0_b := f0.fp % scale
 
+	var _sign = int64(f.Sign()*f0.Sign())
+
 	var result int64
 
 	if fp0_a != 0 {
 		result = fp_a*fp0_a*scale + fp_b*fp0_a
 	}
 	if fp0_b != 0 {
-		result = result + (fp_a * fp0_b) + ((fp_b)*fp0_b+5*(scale/10))/scale
+		result = result + (fp_a * fp0_b) + ((fp_b)*fp0_b+5*_sign*(scale/10))/scale
 	}
 
 	return Fixed{fp: result}
