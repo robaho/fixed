@@ -213,13 +213,15 @@ func (f Fixed) Mul(f0 Fixed) Fixed {
 	fp0_a := f0 / scaleF
 	fp0_b := f0 % scaleF
 
+	var _sign = Fixed(f.Sign()*f0.Sign())
+
 	var result Fixed
 
 	if fp0_a != 0 {
 		result = fp_a*fp0_a*scaleF + fp_b*fp0_a
 	}
 	if fp0_b != 0 {
-		result = result + (fp_a * fp0_b) + ((fp_b)*fp0_b+5*(scaleF/10))/scaleF
+		result = result + (fp_a * fp0_b) + ((fp_b)*fp0_b+5*_sign*(scaleF/10))/scaleF
 	}
 
 	return result
