@@ -219,7 +219,7 @@ func (f Fixed) Mul(f0 Fixed) Fixed {
 		result = fp_a*fp0_a*scaleF + fp_b*fp0_a
 	}
 	if fp0_b != 0 {
-		result = result + (fp_a * fp0_b) + ((fp_b)*fp0_b)/scaleF
+		result = result + (fp_a * fp0_b) + ((fp_b)*fp0_b+5000000)/scaleF
 	}
 
 	return result
