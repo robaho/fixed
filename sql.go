@@ -14,12 +14,12 @@ func (f *FixedN[T]) Scan(value interface{}) error {
 	switch v := value.(type) {
 
 	case float32:
-		*f = NewFN[T](float64(v),f.places)
+		*f = NewFN[T](float64(v), f.places)
 		return nil
 
 	case float64:
 		// numeric in sqlite3 sends us float64
-		*f = NewFN[T](v,f.places)
+		*f = NewFN[T](v, f.places)
 		return nil
 
 	case int64:
@@ -32,7 +32,7 @@ func (f *FixedN[T]) Scan(value interface{}) error {
 		if err != nil {
 			return err
 		}
-		val, err := NewSNErr[T](str,f.places)
+		val, err := NewSNErr[T](str, f.places)
 		if err != nil {
 			return err
 		}

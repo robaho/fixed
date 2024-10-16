@@ -23,17 +23,18 @@ const _MAX = 999999999999999999
 
 type Places7 struct {
 }
-func (Places7)places() int { return 7; }
-func (Places7)scale() int64 { return 10 * 10 * 10 * 10 * 10 * 10 * 10; }
-func (Places7)zeros() string { return "0000000"; }
-func (Places7)max() float64 { return float64(_MAX)/(10 * 10 * 10 * 10 * 10 * 10 * 10); }
+
+func (Places7) places() int   { return 7 }
+func (Places7) scale() int64  { return 10 * 10 * 10 * 10 * 10 * 10 * 10 }
+func (Places7) zeros() string { return "0000000" }
+func (Places7) max() float64  { return float64(_MAX) / (10 * 10 * 10 * 10 * 10 * 10 * 10) }
 
 var places7 = Places7{}
 
 // Fixed is a fixed precision 38.24 number (supports 11.7 digits). It supports NaN.
 type FixedN[T Places] struct {
 	places T
-	fp int64
+	fp     int64
 }
 
 type Fixed7 = FixedN[Places7]
@@ -62,12 +63,12 @@ func NewSN[T Places](s string) Fixed {
 }
 
 func NewSErr(s string) (Fixed, error) {
-	f, err := NewSNErr[Places7](s,places7)
-	return f,err
+	f, err := NewSNErr[Places7](s, places7)
+	return f, err
 }
 
 func _NaN[T Places]() FixedN[T] {
-	return FixedN[T]{fp:nan}
+	return FixedN[T]{fp: nan}
 }
 
 // NewSErr creates a new Fixed from a string, returning NaN, and error if the string could not be parsed
@@ -79,7 +80,7 @@ func NewSNErr[T Places](s string, places T) (FixedN[T], error) {
 		if err != nil {
 			return _NaN[T](), err
 		}
-		return NewFN[T](f,places), nil
+		return NewFN[T](f, places), nil
 	}
 	if "NaN" == s {
 		return _NaN[T](), nil
@@ -128,8 +129,8 @@ func Parse(s string) (Fixed, error) {
 	return NewSErr(s)
 }
 
-func ParseN[T Places](s string,t T) (FixedN[T], error) {
-	return NewSNErr(s,t)
+func ParseN[T Places](s string, t T) (FixedN[T], error) {
+	return NewSNErr(s, t)
 }
 
 // MustParse creates a new Fixed from a string, and panics if the string could not be parsed
@@ -140,8 +141,8 @@ func MustParse(s string) Fixed {
 	}
 	return f
 }
-func MustParseN[T Places](s string,t T) FixedN[T] {
-	f, err := NewSNErr(s,t)
+func MustParseN[T Places](s string, t T) FixedN[T] {
+	f, err := NewSNErr(s, t)
 	if err != nil {
 		panic(err)
 	}
@@ -157,16 +158,16 @@ func max(a, b int) int {
 
 // NewF creates a Fixed from an float64, rounding at the 8th decimal place
 func NewF(f float64) Fixed {
-	return NewFN[Places7](f,places7);
+	return NewFN[Places7](f, places7)
 }
 
 // NewF creates a Fixed from an float64, rounding at the 8th decimal place
-func NewFN[T Places](f float64,t Places) FixedN[T] {
+func NewFN[T Places](f float64, t Places) FixedN[T] {
 	if math.IsNaN(f) {
-		return _NaN[T]();
+		return _NaN[T]()
 	}
 	if f >= MAX || f <= -MAX {
-		return _NaN[T]();
+		return _NaN[T]()
 	}
 	round := .5
 	if f < 0 {
@@ -179,9 +180,10 @@ func NewFN[T Places](f float64,t Places) FixedN[T] {
 // NewI creates a Fixed for an integer, moving the decimal point n places to the left
 // For example, NewI(123,1) becomes 12.3. If n > 7, the value is truncated
 func NewI(i int64, n uint) Fixed {
-	return NewIN[Places7](i,n,places7)
+	return NewIN[Places7](i, n, places7)
 }
-	// NewI creates a Fixed for an integer, moving the decimal point n places to the left
+
+// NewI creates a Fixed for an integer, moving the decimal point n places to the left
 // For example, NewI(123,1) becomes 12.3. If n > 7, the value is truncated
 func NewIN[T Places](i int64, n uint, t T) Fixed {
 	nPlaces := uint(t.places())
@@ -212,7 +214,7 @@ func (f FixedN[T]) Sign() int {
 	if f.IsNaN() {
 		return 0
 	}
-	return f.Cmp(FixedN[T]{fp:0})
+	return f.Cmp(FixedN[T]{fp: 0})
 }
 
 // Float converts the Fixed to a float64
@@ -272,7 +274,7 @@ func (f FixedN[T]) Mul(f0 FixedN[T]) FixedN[T] {
 	fp0_a := f0.fp / scale
 	fp0_b := f0.fp % scale
 
-	var _sign = int64(f.Sign()*f0.Sign())
+	var _sign = int64(f.Sign() * f0.Sign())
 
 	var result int64
 
@@ -291,7 +293,7 @@ func (f FixedN[T]) Div(f0 FixedN[T]) FixedN[T] {
 	if f.IsNaN() || f0.IsNaN() {
 		return _NaN[T]()
 	}
-	return NewFN[T](f.Float() / f0.Float(),f.places)
+	return NewFN[T](f.Float()/f0.Float(), f.places)
 }
 
 func sign(fp int64) int64 {
@@ -421,7 +423,7 @@ func (f FixedN[T]) tostr() (string, int) {
 	return string(b), len(b) - f.places.places() - 1
 }
 
-func itoa(buf []byte, val int64,nPlaces int) []byte {
+func itoa(buf []byte, val int64, nPlaces int) []byte {
 	neg := val < 0
 	if neg {
 		val = val * -1
@@ -505,7 +507,7 @@ func (f *FixedN[T]) UnmarshalJSON(bytes []byte) error {
 		return nil
 	}
 
-	fixed, err := NewSNErr(s,f.places)
+	fixed, err := NewSNErr(s, f.places)
 	*f = fixed
 	if err != nil {
 		return fmt.Errorf("Error decoding string '%s': %s", s, err)
@@ -519,5 +521,5 @@ func (f FixedN[T]) MarshalJSON() ([]byte, error) {
 		return []byte("\"NaN\""), nil
 	}
 	buffer := make([]byte, 24)
-	return itoa(buffer, f.fp,f.places.places()), nil
+	return itoa(buffer, f.fp, f.places.places()), nil
 }
