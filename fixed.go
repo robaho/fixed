@@ -215,7 +215,7 @@ func (f Fixed) Mul(f0 Fixed) Fixed {
 	fp0_a := f0.fp / scale
 	fp0_b := f0.fp % scale
 
-	var _sign = int64(f.Sign()*f0.Sign())
+	var _sign = int64(f.Sign() * f0.Sign())
 
 	var result int64
 
