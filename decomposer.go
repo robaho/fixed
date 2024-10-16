@@ -15,7 +15,7 @@ import (
 // Decompose returns the internal decimal state into parts.
 // If the provided buf has sufficient capacity, buf may be returned as the coefficient with
 // the value set and length set as appropriate.
-func (f Fixed) Decompose(buf []byte) (form byte, negative bool, coefficient []byte, exponent int32) {
+func (f FixedN[T]) Decompose(buf []byte) (form byte, negative bool, coefficient []byte, exponent int32) {
 	if f.fp == nan {
 		form = 2
 		return
@@ -34,13 +34,13 @@ func (f Fixed) Decompose(buf []byte) (form byte, negative bool, coefficient []by
 		coefficient = make([]byte, 8)
 	}
 	binary.BigEndian.PutUint64(coefficient, uint64(c))
-	exponent = -nPlaces
+	exponent = -(int32(f.places.places()))
 	return
 }
 
 // Compose sets the internal decimal value from parts. If the value cannot be
 // represented then an error should be returned.
-func (f *Fixed) Compose(form byte, negative bool, coefficient []byte, exponent int32) (err error) {
+func (f *FixedN[T]) Compose(form byte, negative bool, coefficient []byte, exponent int32) (err error) {
 	if f == nil {
 		return errors.New("Fixed must not be nil")
 	}
@@ -70,7 +70,7 @@ func (f *Fixed) Compose(form byte, negative bool, coefficient []byte, exponent i
 		}
 	}
 
-	dividePower := int(exponent) + nPlaces
+	dividePower := int(exponent) + f.places.places()
 	ct := dividePower
 	if ct < 0 {
 		ct = -ct

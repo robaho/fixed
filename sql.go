@@ -9,21 +9,21 @@ import (
 )
 
 // Scan implements the sql.Scanner interface for database deserialization.
-func (f *Fixed) Scan(value interface{}) error {
+func (f *FixedN[T]) Scan(value interface{}) error {
 	// first try to see if the data is stored in database as a Numeric datatype
 	switch v := value.(type) {
 
 	case float32:
-		*f = NewF(float64(v))
+		*f = NewFN[T](float64(v),f.places)
 		return nil
 
 	case float64:
 		// numeric in sqlite3 sends us float64
-		*f = NewF(v)
+		*f = NewFN[T](v,f.places)
 		return nil
 
 	case int64:
-		*f = NewI(v, nPlaces)
+		*f = NewIN[T](v, f.places.places(), f.places)
 		return nil
 
 	default:
@@ -32,7 +32,7 @@ func (f *Fixed) Scan(value interface{}) error {
 		if err != nil {
 			return err
 		}
-		val, err := NewSErr(str)
+		val, err := NewSNErr[T](str,f.places)
 		if err != nil {
 			return err
 		}
@@ -62,6 +62,6 @@ func unquoteIfQuoted(value interface{}) (string, error) {
 }
 
 // Value implements the driver.Valuer interface for database serialization.
-func (f Fixed) Value() (driver.Value, error) {
+func (f FixedN[T]) Value() (driver.Value, error) {
 	return f.String(), nil
 }
