@@ -7,7 +7,7 @@ The c++ version is available [here](https://github.com/robaho/cpp_fixed).
 All numbers have a fixed 7 decimal places, and the maximum permitted value is +- 99999999999,
 or just under 100 billion.
 
-The library is safe for concurrent use. It has built-in support for binary and json marshalling.
+The library is safe for concurrent use. Fixed values are immutable. It has built-in support for binary and json marshalling.
 
 It is ideally suited for high performance trading financial systems. All common math operations are completed with 0 allocs.
 
