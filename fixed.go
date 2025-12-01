@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"math/bits"
 	"strconv"
 	"strings"
 )
@@ -231,10 +232,29 @@ func (f Fixed) Mul(f0 Fixed) Fixed {
 
 // Div divides f by f0 returning a Fixed. If either operand is NaN, NaN is returned
 func (f Fixed) Div(f0 Fixed) Fixed {
-	if f.IsNaN() || f0.IsNaN() {
+	if f.IsNaN() || f0.IsNaN() || f0.fp == 0 {
 		return NaN
 	}
-	return NewF(f.Float() / f0.Float())
+
+	sign, fp, fp0 := int64(1), f.fp, f0.fp
+
+	if fp < 0 {
+		fp, sign = -fp, -sign
+	}
+	if fp0 < 0 {
+		fp0, sign = -fp0, -sign
+	}
+
+	// Use 128-bit math to calculate fp * scale / fp0.
+	hi, lo := bits.Mul64(uint64(fp), uint64(scale))
+	quo, rem := bits.Div64(hi, lo, uint64(fp0))
+
+	// Round if remainder >= divisor/2
+	if rem >= uint64(fp0)/2 {
+		quo++
+	}
+
+	return Fixed{fp: int64(quo) * sign}
 }
 
 func sign(fp int64) int64 {
