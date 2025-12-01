@@ -244,6 +244,39 @@ func sign(fp int64) int64 {
 	return 1
 }
 
+func (f Fixed) Sqrt() Fixed {
+	if f.IsNaN() || f.LessThan(ZERO) {
+		return NaN
+	}
+	if f.Equal(ZERO) {
+		return ZERO
+	}
+
+	// Use Newton's method. Use an epsilon of 0.0000001 to prevent issues with
+	// rounding. On each iteration, next guess is the average of f/f0 and f0
+	// (where f0 is the last guess).
+	f0 := NewI(1, 0)
+	eps := NewI(1, 7)
+	TWO := NewI(2, 0)
+
+	// Calculate the first guess using f/f0/2 + f0/2 to avoid overflowing
+	f0 = f.Div(f0).Div(TWO).Add(f0.Div(TWO))
+
+	// Bail out if we get NaN anyways (otherwise it loops forever)
+	if f0.IsNaN() {
+		return NaN
+	}
+
+	// Keep iterating until it converges
+	for {
+		f1 := f.Div(f0).Add(f0).Div(TWO)
+		if f0.Sub(f1).Abs().LessThanOrEqual(eps) {
+			return f1
+		}
+		f0 = f1
+	}
+}
+
 // Round returns a rounded (half-up, away from zero) to n decimal places
 func (f Fixed) Round(n int) Fixed {
 	if f.IsNaN() {
