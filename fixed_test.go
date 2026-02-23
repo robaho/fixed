@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"math"
+	"math/rand"
 	"testing"
 
-	. "github.com/robaho/fixed"
+	. "github.com/PKartaviy/fixed"
 )
 
 func TestBasic(t *testing.T) {
@@ -98,8 +99,8 @@ func TestNewI(t *testing.T) {
 		t.Error("should be equal", f, "123")
 	}
 	f = NewI(123456789012, 9)
-	if f.String() != "123.456789" {
-		t.Error("should be equal", f, "123.456789")
+	if f.String() != "123.456789012" {
+		t.Error("should be equal", f, "123.456789012")
 	}
 	f = NewI(123456789012, 9)
 	if f.StringN(7) != "123.4567890" {
@@ -129,37 +130,37 @@ func TestSign(t *testing.T) {
 }
 
 func TestMaxValue(t *testing.T) {
-	f0 := NewS("12345678901")
-	if f0.String() != "12345678901" {
-		t.Error("should be equal", f0, "12345678901")
+	f0 := NewS("1234567890")
+	if f0.String() != "1234567890" {
+		t.Error("should be equal", f0, "1234567890")
 	}
 	f0 = NewS("123456789012")
-	if f0.String() != "NaN" {
-		t.Error("should be equal", f0, "NaN")
+	if f0.String() != "123456789012" {
+		t.Error("should be equal", f0, "123456789012")
+	}
+	f0 = NewS("-1234567890")
+	if f0.String() != "-1234567890" {
+		t.Error("should be equal", f0, "-1234567890")
 	}
 	f0 = NewS("-12345678901")
 	if f0.String() != "-12345678901" {
 		t.Error("should be equal", f0, "-12345678901")
 	}
-	f0 = NewS("-123456789012")
-	if f0.String() != "NaN" {
-		t.Error("should be equal", f0, "NaN")
+	f0 = NewS("9999999999")
+	if f0.String() != "9999999999" {
+		t.Error("should be equal", f0, "9999999999")
 	}
-	f0 = NewS("99999999999")
-	if f0.String() != "99999999999" {
-		t.Error("should be equal", f0, "99999999999")
+	f0 = NewS("9.99999999")
+	if f0.String() != "9.99999999" {
+		t.Error("should be equal", f0, "9.99999999")
 	}
-	f0 = NewS("9.9999999")
-	if f0.String() != "9.9999999" {
-		t.Error("should be equal", f0, "9.9999999")
+	f0 = NewS("9999999999.99999999")
+	if f0.String() != "9999999999.99999999" {
+		t.Error("should be equal", f0, "9999999999.99999999")
 	}
-	f0 = NewS("99999999999.9999999")
-	if f0.String() != "99999999999.9999999" {
-		t.Error("should be equal", f0, "99999999999.9999999")
-	}
-	f0 = NewS("99999999999.12345678901234567890")
-	if f0.String() != "99999999999.1234567" {
-		t.Error("should be equal", f0, "99999999999.1234567")
+	f0 = NewS("9999999999.12345678901234567890")
+	if f0.String() != "9999999999.123456789012345678" {
+		t.Error("should be equal", f0, "9999999999.123456789012345678")
 	}
 
 }
@@ -321,8 +322,8 @@ func TestMulDiv(t *testing.T) {
 	f1 = NewS("3")
 
 	f2 = f0.Div(f1)
-	if f2.String() != "0.6666667" {
-		t.Error("should be equal", f2.String(), "0.6666667")
+	if f2.String() != "0.666666666666666667" {
+		t.Error("should be equal", f2.String(), "0.666666666666666667")
 	}
 
 	f0 = NewS("1000")
@@ -353,16 +354,16 @@ func TestMulDiv(t *testing.T) {
 	f1 = NewS("0.066248")
 
 	f2 = f0.Mul(f1)
-	if f2.String() != "0.0000001" {
-		t.Error("should be equal", f2.String(), "0.0000001")
+	if f2.String() != "0.000000066248" {
+		t.Error("should be equal", f2.String(), "0.000000066248")
 	}
 
 	f0 = NewS("-0.000001")
 	f1 = NewS("0.066248")
 
 	f2 = f0.Mul(f1)
-	if f2.String() != "-0.0000001" {
-		t.Error("should be equal", f2.String(), "-0.0000001")
+	if f2.String() != "-0.000000066248" {
+		t.Error("should be equal", f2.String(), "-0.000000066248")
 	}
 
 }
@@ -397,16 +398,16 @@ func TestOverflow(t *testing.T) {
 		t.Error("should be equal", f0.String(), "1.1234567")
 	}
 	f0 = NewF(1.123456789123)
-	if f0.String() != "1.1234568" {
-		t.Error("should be equal", f0.String(), "1.1234568")
+	if f0.String() != "1.123456789123" {
+		t.Error("should be equal", f0.String(), "1.123456789123")
 	}
 	f0 = NewF(1.0 / 3.0)
-	if f0.String() != "0.3333333" {
-		t.Error("should be equal", f0.String(), "0.3333333")
+	if f0.String() != "0.3333333333333333" {
+		t.Error("should be equal", f0.String(), "0.3333333333333333")
 	}
 	f0 = NewF(2.0 / 3.0)
-	if f0.String() != "0.6666667" {
-		t.Error("should be equal", f0.String(), "0.6666667")
+	if f0.String() != "0.6666666666666666" {
+		t.Error("should be equal", f0.String(), "0.6666666666666666")
 	}
 
 }
@@ -717,5 +718,255 @@ func TestJSON_NaN(t *testing.T) {
 
 	if !j.F.IsNaN() {
 		t.Error("did not decode NaN", j.F, f)
+	}
+}
+
+func TestMulVsMulSlow(t *testing.T) {
+	type pair struct {
+		name string
+		a, b Fixed
+	}
+
+	one := NewS("1")
+	negOne := NewS("-1")
+	zero := NewS("0")
+
+	cases := []pair{
+		{"pos*pos", NewS("123.456"), NewS("789.012")},
+		{"pos*neg", NewS("123.456"), NewS("-789.012")},
+		{"neg*neg", NewS("-123.456"), NewS("-789.012")},
+		{"zero*pos", zero, NewS("123.456")},
+		{"pos*zero", NewS("123.456"), zero},
+		{"zero*neg", zero, NewS("-123.456")},
+		{"neg*zero", NewS("-123.456"), zero},
+		{"zero*zero", zero, zero},
+		{"one*val", one, NewS("999.999")},
+		{"negone*val", negOne, NewS("999.999")},
+		{"frac*frac", NewS("0.000001"), NewS("0.066248")},
+		{"neg_frac*frac", NewS("-0.000001"), NewS("0.066248")},
+		{"large_int", NewS("10000.1"), NewS("10000")},
+		{"near_max", NewS("999999999"), NewS("999999999")},
+		{"small_fracs", NewS("0.000000000000000001"), NewS("1")},
+		{"mixed1", NewS("123456789.123456789"), NewS("0.000000001")},
+		{"mixed2", NewS("1.999999999999999999"), NewS("1.999999999999999999")},
+		// Large hi values (a[0] > 0 in base-10^9 decomposition)
+		{"large_hi*frac", NewS("1000000001.5"), NewS("0.5")},
+		{"large_hi*one", NewS("999999999999999999"), NewS("1")},
+		{"large_hi*small", NewS("999999999999999999"), NewS("0.000000000000000001")},
+		{"large_hi*neg_frac", NewS("999999999999999999"), NewS("-0.000000000000000001")},
+		{"large_hi*large_frac", NewS("123456789012345678"), NewS("0.000000001")},
+		{"neg_large*frac", NewS("-123456789012345678"), NewS("0.5")},
+		// Overflow cases
+		{"overflow", NewS("999999999999999999"), NewS("999999999999999999")},
+		{"near_overflow", NewS("999999999999999999.999999999999999999"), NewS("1.000000000000000001")},
+		{"both_nan", NaN, NaN},
+		{"nan_left", NaN, one},
+		{"nan_right", one, NaN},
+	}
+
+	for _, tc := range cases {
+		fast := tc.a.Mul(tc.b)
+		slow := tc.a.MulSlow(tc.b)
+		if fast.IsNaN() && slow.IsNaN() {
+			continue
+		}
+		if !fast.Equal(slow) {
+			t.Errorf("%s: Mul(%s, %s) = %s, MulSlow = %s",
+				tc.name, tc.a, tc.b, fast, slow)
+		}
+	}
+
+	// Random/fuzz loop with two ranges:
+	// 1) Small hi (products usually in range) — tests normal paths
+	// 2) Large hi with small multiplier — tests a[0]>0 digit decomposition
+	rng := rand.New(rand.NewSource(42))
+
+	compare := func(tag string, i int, a, b Fixed) {
+		fast := a.Mul(b)
+		slow := a.MulSlow(b)
+		if fast.IsNaN() && slow.IsNaN() {
+			return
+		}
+		if !fast.Equal(slow) {
+			t.Errorf("%s iter %d: Mul(%s, %s) = %s, MulSlow = %s",
+				tag, i, a, b, fast, slow)
+		}
+	}
+
+	for i := 0; i < 10000; i++ {
+		// Small hi: [-10^9, 10^9]
+		aHi := rng.Int63n(2000000000) - 1000000000
+		aLo := rng.Int63n(1000000000000000000)
+		bHi := rng.Int63n(2000000000) - 1000000000
+		bLo := rng.Int63n(1000000000000000000)
+		if aHi < 0 {
+			aLo = -aLo
+		}
+		if bHi < 0 {
+			bLo = -bLo
+		}
+		a := NewI(aHi, 0).Add(NewI(aLo, 18))
+		b := NewI(bHi, 0).Add(NewI(bLo, 18))
+		compare("small", i, a, b)
+	}
+
+	for i := 0; i < 10000; i++ {
+		// Large hi * small value — exercises a[0] > 0 without always overflowing
+		aHi := rng.Int63n(999999999999999999) + 1 // [1, maxHi]
+		aLo := rng.Int63n(1000000000000000000)
+		// Small multiplier: pure fraction in [0, 1)
+		bLo := rng.Int63n(1000000000000000000)
+		sign := int64(1)
+		if rng.Intn(2) == 0 {
+			sign = -1
+		}
+		a := NewI(sign*aHi, 0).Add(NewI(sign*aLo, 18))
+		b := NewI(bLo, 18)
+		compare("large", i, a, b)
+	}
+}
+
+func TestDivVsDivSlow(t *testing.T) {
+	type pair struct {
+		name string
+		a, b Fixed
+	}
+
+	one := NewS("1")
+	negOne := NewS("-1")
+	zero := NewS("0")
+
+	cases := []pair{
+		{"1/3", one, NewS("3")},
+		{"2/3", NewS("2"), NewS("3")},
+		{"1/7", one, NewS("7")},
+		{"1/9", one, NewS("9")},
+		{"10/3", NewS("10"), NewS("3")},
+		{"-1/3", negOne, NewS("3")},
+		{"1/-3", one, NewS("-3")},
+		{"-1/-3", negOne, NewS("-3")},
+		{"5/5", NewS("5"), NewS("5")},
+		{"large/small", NewS("999999999999999999"), NewS("0.000000000000000001")},
+		{"small/large", NewS("0.000000000000000001"), NewS("999999999999999999")},
+		{"max/1", NewS("999999999999999999.999999999999999999"), one},
+		{"max/-1", NewS("999999999999999999.999999999999999999"), negOne},
+		{"frac/frac", NewS("0.123456789"), NewS("0.987654321")},
+		{"-frac/frac", NewS("-0.123456789"), NewS("0.987654321")},
+		{"large_int/large_int", NewS("123456789012345678"), NewS("987654321")},
+		{"1/1", one, one},
+		{"0/1", zero, one},
+		{"0/-1", zero, negOne},
+		{"div_by_zero", one, zero},
+		{"mixed", NewS("123456789.123456789"), NewS("0.000000001")},
+		{"near_max_result", NewS("999999999999999999"), NewS("1.000000000000000001")},
+		{"both_nan", NaN, NaN},
+		{"nan_left", NaN, one},
+		{"nan_right", one, NaN},
+	}
+
+	for _, tc := range cases {
+		fast := tc.a.Div(tc.b)
+		slow := tc.a.DivSlow(tc.b)
+		if fast.IsNaN() && slow.IsNaN() {
+			continue
+		}
+		if !fast.Equal(slow) {
+			t.Errorf("%s: Div(%s, %s) = %s, DivSlow = %s",
+				tc.name, tc.a, tc.b, fast, slow)
+		}
+	}
+
+	// Random/fuzz loop
+	rng := rand.New(rand.NewSource(42))
+
+	compare := func(tag string, i int, a, b Fixed) {
+		fast := a.Div(b)
+		slow := a.DivSlow(b)
+		if fast.IsNaN() && slow.IsNaN() {
+			return
+		}
+		if !fast.Equal(slow) {
+			t.Errorf("%s iter %d: Div(%s, %s) = %s, DivSlow = %s",
+				tag, i, a, b, fast, slow)
+		}
+	}
+
+	for i := 0; i < 10000; i++ {
+		// Random values with moderate hi
+		aHi := rng.Int63n(2000000000) - 1000000000
+		aLo := rng.Int63n(1000000000000000000)
+		bHi := rng.Int63n(2000000000) - 1000000000
+		bLo := rng.Int63n(1000000000000000000)
+		if aHi < 0 {
+			aLo = -aLo
+		}
+		if bHi < 0 {
+			bLo = -bLo
+		}
+		a := NewI(aHi, 0).Add(NewI(aLo, 18))
+		b := NewI(bHi, 0).Add(NewI(bLo, 18))
+		// Skip division by zero
+		if b.Sign() == 0 {
+			continue
+		}
+		compare("small", i, a, b)
+	}
+
+	for i := 0; i < 10000; i++ {
+		// Large dividend / small divisor — exercises quotient overflow paths
+		aHi := rng.Int63n(999999999999999999) + 1
+		aLo := rng.Int63n(1000000000000000000)
+		// Divisor: small positive value to avoid trivial overflow
+		bHi := rng.Int63n(1000) + 1
+		bLo := rng.Int63n(1000000000000000000)
+		sign := int64(1)
+		if rng.Intn(2) == 0 {
+			sign = -1
+		}
+		a := NewI(sign*aHi, 0).Add(NewI(sign*aLo, 18))
+		b := NewI(bHi, 0).Add(NewI(bLo, 18))
+		compare("large", i, a, b)
+	}
+}
+
+func TestNewFVsNewFSlow(t *testing.T) {
+	specific := []float64{
+		0, -0.0, 1, -1, 0.5, -0.5,
+		123.456, -123.456,
+		0.0001, -0.0001,
+		1.0 / 3.0, 2.0 / 3.0,
+		math.Pi, math.E,
+		1e15, -1e15,
+		999999999999999999.0,
+		-999999999999999999.0,
+		0.000000000000000001,
+		42.0,
+		0.1, 0.2, 0.3,
+		1234567890.123456789,
+	}
+
+	match := func(label string, v float64) {
+		fast := NewF(v)
+		slow := NewFSlow(v)
+		// NaN.Equal(NaN) is false, so compare IsNaN separately
+		if fast.IsNaN() && slow.IsNaN() {
+			return
+		}
+		if !fast.Equal(slow) {
+			t.Errorf("%s: NewF(%v) = %s, NewFSlow(%v) = %s", label, v, fast.String(), v, slow.String())
+		}
+	}
+
+	for _, v := range specific {
+		match("specific", v)
+	}
+
+	rng := rand.New(rand.NewSource(42))
+	for i := 0; i < 10000; i++ {
+		f := (rng.Float64()*2 - 1) * 1e18
+		if f >= MAX || f <= -MAX {
+			continue
+		}
+		match("random", f)
 	}
 }

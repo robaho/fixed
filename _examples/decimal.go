@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/robaho/fixed"
+
+	"github.com/PKartaviy/fixed"
 )
 
 func main() {

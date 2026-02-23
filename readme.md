@@ -4,8 +4,8 @@ A fixed place numeric library designed for performance.
 
 The C++ version is available [here](https://github.com/robaho/cpp_fixed).
 
-All numbers have a fixed 7 decimal places (18 digits total), and the maximum permitted value is +- 99999999999,
-or just under 100 billion. NaN is supported.
+All numbers have a fixed 8 decimal places (18 digits total), and the maximum permitted value is +- 9999999999,
+or just under 10 billion. NaN is supported.
 
 The library is safe for concurrent use. Fixed values are immutable. It has built-in support for binary and json marshalling.
 

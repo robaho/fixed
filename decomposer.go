@@ -4,9 +4,8 @@
 package fixed
 
 import (
-	"encoding/binary"
 	"errors"
-	"fmt"
+	"math/big"
 )
 
 // See https://godoc.org/github.com/golang-sql/decomposer for the decomposer.Decimal
@@ -16,25 +15,32 @@ import (
 // If the provided buf has sufficient capacity, buf may be returned as the coefficient with
 // the value set and length set as appropriate.
 func (f Fixed) Decompose(buf []byte) (form byte, negative bool, coefficient []byte, exponent int32) {
-	if f.fp == nan {
+	if f.IsNaN() {
 		form = 2
 		return
 	}
-	if f.fp == 0 {
+	if f.hi == 0 && f.lo == 0 {
 		return
 	}
-	c := f.fp
-	if c < 0 {
-		negative = true
-		c = -c
+
+	negative = f.hi < 0 || (f.hi == 0 && f.lo < 0)
+
+	// Combine hi and lo into single coefficient
+	// coefficient = hi * scale + lo (absolute values)
+	absHi := f.hi
+	if absHi < 0 {
+		absHi = -absHi
 	}
-	if cap(buf) >= 8 {
-		coefficient = buf[:8]
-	} else {
-		coefficient = make([]byte, 8)
+	absLo := f.lo
+	if absLo < 0 {
+		absLo = -absLo
 	}
-	binary.BigEndian.PutUint64(coefficient, uint64(c))
-	exponent = -nPlaces
+
+	bigCoef := new(big.Int).Mul(big.NewInt(absHi), big.NewInt(scale))
+	bigCoef.Add(bigCoef, big.NewInt(absLo))
+
+	coefficient = bigCoef.Bytes() // Big-endian encoding
+	exponent = -18
 	return
 }
 
@@ -45,55 +51,50 @@ func (f *Fixed) Compose(form byte, negative bool, coefficient []byte, exponent i
 		return errors.New("Fixed must not be nil")
 	}
 	switch form {
+	case 1, 2: // Infinite or NaN
+		f.hi = nanHi
+		f.lo = nanLo
+		return nil
+	case 0: // Finite
+		// Continue below
 	default:
 		return errors.New("invalid form")
-	case 0:
-		// Finite form, see below.
-	case 1:
-		// Infinite form, turn into NaN.
-		f.fp = nan
-		return nil
-	case 2:
-		f.fp = nan
-		return nil
 	}
-	// Finite form.
 
-	var c uint64
-	maxi := len(coefficient) - 1
-	for i := range coefficient {
-		v := coefficient[maxi-i]
-		if i < 8 {
-			c |= uint64(v) << (uint(i) * 8)
-		} else if v != 0 {
-			return fmt.Errorf("coefficent too large")
+	// Parse coefficient from bytes
+	bigCoef := new(big.Int).SetBytes(coefficient)
+
+	// Adjust for exponent
+	dividePower := int(exponent) + 18
+	if dividePower != 0 {
+		ct := dividePower
+		if ct < 0 {
+			ct = -ct
+		}
+		adjuster := new(big.Int).Exp(big.NewInt(10), big.NewInt(int64(ct)), nil)
+		if dividePower < 0 {
+			bigCoef.Div(bigCoef, adjuster)
+		} else {
+			bigCoef.Mul(bigCoef, adjuster)
 		}
 	}
 
-	dividePower := int(exponent) + nPlaces
-	ct := dividePower
-	if ct < 0 {
-		ct = -ct
+	// Split into hi and lo
+	bigScale := big.NewInt(scale)
+	hi := new(big.Int).Div(bigCoef, bigScale)
+	lo := new(big.Int).Mod(bigCoef, bigScale)
+
+	if !hi.IsInt64() || !lo.IsInt64() {
+		return errTooLarge
 	}
-	var power uint64 = 1
-	for i := 0; i < ct; i++ {
-		power *= 10
-	}
-	checkC := c
-	if dividePower < 0 {
-		c = c / power
-		if c*power != checkC {
-			return fmt.Errorf("unable to store decimal, greater then 7 decimals")
-		}
-	} else if dividePower > 0 {
-		c = c * power
-		if c/power != checkC {
-			return fmt.Errorf("enable to store decimal, too large")
-		}
-	}
-	f.fp = int64(c)
+
+	f.hi = hi.Int64()
+	f.lo = lo.Int64()
+
 	if negative {
-		f.fp = -f.fp
+		f.hi = -f.hi
+		f.lo = -f.lo
 	}
+
 	return nil
 }
