@@ -77,6 +77,14 @@ func NewSErr(s string) (Fixed, error) {
 			}
 		}
 		fs := s[period+1:]
+		// Extra digits past the fixed scale are truncated. Anything else in that tail is not a number.
+		if len(fs) > nPlaces {
+			for i := nPlaces; i < len(fs); i++ {
+				if fs[i] < '0' || fs[i] > '9' {
+					return NaN, errors.New("cannot parse")
+				}
+			}
+		}
 		fs = fs + zeros[:max(0, nPlaces-len(fs))]
 		f, err = strconv.ParseInt(fs[0:nPlaces], 10, 64)
 		if err != nil {

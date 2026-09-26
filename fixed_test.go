@@ -73,6 +73,22 @@ func TestParse(t *testing.T) {
 	if err == nil {
 		t.Fail()
 	}
+	_, err = Parse("1.2345678abc")
+	if err == nil {
+		t.Fatal("1.2345678abc parsed")
+	}
+	_, err = Parse("-1.2345678x")
+	if err == nil {
+		t.Fatal("-1.2345678x parsed")
+	}
+	f, err := Parse("1.23456789")
+	if err != nil || f.String() != "1.2345678" {
+		t.Fatalf("1.23456789 = %s err=%v", f, err)
+	}
+	f, err = Parse("1.2")
+	if err != nil || f.String() != "1.2" {
+		t.Fatalf("1.2 = %s err=%v", f, err)
+	}
 }
 
 func TestMustParse(t *testing.T) {
